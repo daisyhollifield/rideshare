@@ -1,8 +1,26 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-<h1>Hello!</h1>
+<h1>Wellesley College Rideshare</h1>
 
 <p>For a greeting by name, visit this <a href="{{ url_for('greet') }}">greeting</a> page.</p>
+
+<div class ="post-block">
+    <h3>Ride to Starbucks</h3> 
+    <div class="driver-block">
+        <p>Driver: Lindsay Strong (ls4)</p>
+        <p>Phone Number: 123-456-7890</p>
+    </div>
+    <div class="destination-block">
+        <p>Starbucks</p>
+        <p>101 Linden St</p>
+        <p>Wellesley, MA 02482</p>
+    </div>
+    <div class="ride-info">
+        <p>Date: 11/12 Time: 2:00pm </p>
+        <p>Available Seats: 2</p>
+        <p>Special Request: </p>
+    </div>
+</div>
 
 {% endblock %}

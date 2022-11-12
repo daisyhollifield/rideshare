@@ -23,7 +23,7 @@ app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
 @app.route('/')
 def index():
-    return render_template('main.html',title='Hello')
+    return render_template('main.html',title='Main Page')
 
 @app.route('/greet/', methods=["GET", "POST"])
 def greet():
