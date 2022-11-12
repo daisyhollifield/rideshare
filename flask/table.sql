@@ -1,4 +1,4 @@
-use ls4_db;
+use rideshare_db;
 
 drop table if exists `Comment`;
 drop table if exists `Post`;

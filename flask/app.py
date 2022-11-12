@@ -7,7 +7,9 @@ app = Flask(__name__)
 # change comment characters to switch to SQLite
 
 import cs304dbi as dbi
+dbi.conf('rideshare_db')
 # import cs304dbi_sqlite3 as dbi
+import queue_functions as qf
 
 import random
 
@@ -23,7 +25,9 @@ app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
 @app.route('/')
 def index():
-    return render_template('main.html',title='Main Page')
+    conn = dbi.connect()
+    posts = qf.get_posts_with_user_names(conn)
+    return render_template('main.html',title='Main Page', posts = posts)
 
 @app.route('/greet/', methods=["GET", "POST"])
 def greet():
@@ -67,7 +71,7 @@ def testform():
 def init_db():
     dbi.cache_cnf()
     # set this local variable to 'wmdb' or your personal or team db
-    db_to_use = 'put_database_name_here_db' 
+    db_to_use = 'rideshare_db' 
     dbi.use(db_to_use)
     print('will connect to {}'.format(db_to_use))
 

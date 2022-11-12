@@ -22,7 +22,6 @@ HTML {
     margin: 5px;
     padding: 5px;
     line-height: 5px;
-    float: right;
 }
 
 .destination-block{
@@ -32,7 +31,6 @@ HTML {
     margin: 5px;
     line-height: 5px;
     padding: 5px;
-    float: left;
 }
 
 .ride-info{
@@ -43,13 +41,19 @@ HTML {
 }
 
 .post-block {
-    width: 700px;
+    width: 600px;
     border: 4px solid #040505;
-    background-color: #97d1ca;
     padding: 10px;
     margin: 10px;
   }
 
+#offering{
+    background-color: #97d1ca;
+}
+
+#seeking{
+    background-color: #8ad281;
+}
 body {background-color: #FFCCBB;}
 
 h1 {

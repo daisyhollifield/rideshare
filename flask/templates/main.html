@@ -5,22 +5,27 @@
 
 <p>For a greeting by name, visit this <a href="{{ url_for('greet') }}">greeting</a> page.</p>
 
-<div class ="post-block">
-    <h3>Ride to Starbucks</h3> 
+{% for post in posts %}
+{% if post.type == "offering" %}
+<div class ="post-block" id = "offering">
+{% else %}
+<div class ="post-block" id = "seeking">
+{% endif %}
+    <h3>{{post.title}}</h3> 
     <div class="driver-block">
-        <p>Driver: Lindsay Strong (ls4)</p>
-        <p>Phone Number: 123-456-7890</p>
+        <p>User: {{post.name}} ({{post.username}})</p>
+        <p>Phone Number: {{post.phone_number}}</p>
     </div>
     <div class="destination-block">
-        <p>Starbucks</p>
-        <p>101 Linden St</p>
-        <p>Wellesley, MA 02482</p>
+        <p>{{post.destination}}</p>
     </div>
     <div class="ride-info">
-        <p>Date: 11/12 Time: 2:00pm </p>
-        <p>Available Seats: 2</p>
-        <p>Special Request: </p>
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.time()}} </p>
+        <p>Seats: {{post.seats}}</p>
+        <p>Cost: ${{post.cost}}</p>
+        <p>Special Request: {{post.special_request}}</p>
     </div>
 </div>
+{% endfor %}
 
 {% endblock %}
