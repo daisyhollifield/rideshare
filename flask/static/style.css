@@ -15,37 +15,38 @@ HTML {
     color: var(--color-hilite);
     font-style: italic;
 }
-.driver-block{
-    color:rgb(85, 85, 135);
-    background-color: white;
-    border: 3px solid black;
-    margin: 5px;
-    padding: 5px;
-    line-height: 5px;
-}
-
-.destination-block{
-    color:rgb(135, 93, 85);
-    background-color: rgb(226, 234, 156);
-    border: 3px solid black;
-    margin: 5px;
-    line-height: 5px;
-    padding: 5px;
-}
-
-.ride-info{
-    color:rgb(155, 72, 56);
-    margin: 5px;
-    line-height: 5px;
-    padding: 5px;
-}
 
 .post-block {
     width: 600px;
-    border: 4px solid #040505;
     padding: 10px;
     margin: 10px;
   }
+
+#driver-block{
+    color:rgb(85, 85, 135);
+}
+
+#destination-block{
+    color:rgb(135, 93, 85);
+}
+
+#ride-block{
+    color:rgb(155, 72, 56);
+}
+
+.driver-info-block{
+    margin: 5px;
+    background-color: #caf4ed;
+    line-height: 5px;
+    padding: 5px;
+}
+
+.rider-info-block{
+    margin: 5px;
+    background-color: #c2f6bb;
+    line-height: 5px;
+    padding: 5px;
+}
 
 #offering{
     background-color: #97d1ca;
@@ -54,6 +55,9 @@ HTML {
 #seeking{
     background-color: #8ad281;
 }
+
+
+
 body {background-color: #FFCCBB;}
 
 h1 {

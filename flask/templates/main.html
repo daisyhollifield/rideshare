@@ -12,14 +12,26 @@
 <div class ="post-block" id = "seeking">
 {% endif %}
     <h3>{{post.title}}</h3> 
-    <div class="driver-block">
+    {% if post.type == "offering" %}
+    <div class="driver-info-block" id="driver-block">
+    {% else %}
+    <div class="rider-info-block" id="driver-block">
+    {% endif %}
         <p>User: {{post.name}} ({{post.username}})</p>
         <p>Phone Number: {{post.phone_number}}</p>
     </div>
-    <div class="destination-block">
+    {% if post.type == "offering" %}
+    <div class="driver-info-block" id="destination-block">
+    {% else %}
+    <div class="rider-info-block" id="destination-block">
+    {% endif %}
         <p>{{post.destination}}</p>
     </div>
-    <div class="ride-info">
+    {% if post.type == "offering" %}
+    <div class ="driver-info-block" id="ride-block">
+    {% else %}
+    <div class ="rider-info-block" id="ride-block">
+    {% endif %}
         <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.time()}} </p>
         <p>Seats: {{post.seats}}</p>
         <p>Cost: ${{post.cost}}</p>
