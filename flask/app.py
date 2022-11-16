@@ -6,6 +6,9 @@ app = Flask(__name__)
 # one or the other of these. Defaults to MySQL (PyMySQL)
 # change comment characters to switch to SQLite
 
+#OUR GROUP IS THE BEST GROUP EVER! 
+
+
 import cs304dbi as dbi
 dbi.conf('rideshare_db')
 # import cs304dbi_sqlite3 as dbi
