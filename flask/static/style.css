@@ -16,6 +16,9 @@ HTML {
     font-style: italic;
 }
 
+form{
+    background-color: peachpuff;
+}
 .post-block {
     width: 600px;
     padding: 10px;
