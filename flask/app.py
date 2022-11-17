@@ -11,7 +11,7 @@ import cs304dbi as dbi
 dbi.conf('rideshare_db')
 # import cs304dbi_sqlite3 as dbi
 import queue_functions as qf
-
+import crud_functions as cf
 import random
 
 app.secret_key = 'your secret here'
@@ -30,52 +30,44 @@ def index():
     posts = qf.get_posts_with_user_names(conn)
     return render_template('main.html',title='Main Page', posts = posts)
 
-@app.route('/greet/', methods=["GET", "POST"])
-def greet():
-    if request.method == 'GET':
-        return render_template('greet.html', title='Customized Greeting')
-    else:
-        try:
-            username = request.form['username'] # throws error if there's trouble
-            flash('form submission successful')
-            return render_template('greet.html',
-                                   title='Welcome '+username,
-                                   name=username)
 
-        except Exception as err:
-            flash('form submission error'+str(err))
-            return redirect( url_for('index') )
 
-@app.route('/formecho/', methods=['GET','POST'])
-def formecho():
-    if request.method == 'GET':
-        return render_template('form_data.html',
-                               method=request.method,
-                               form_data=request.args)
-    elif request.method == 'POST':
-        return render_template('form_data.html',
-                               method=request.method,
-                               form_data=request.form)
-    else:
-        # maybe PUT?
-        return render_template('form_data.html',
-                               method=request.method,
-                               form_data={})
-
-@app.route('/testform/')
-def testform():
-    # these forms go to the formecho route
-    return render_template('testform.html')
+@app.route('/myposts/', methods =['GET'])
+def showmy():
+    return render_template("myposts.html")
 
 @app.route('/createpost/', methods =['GET', 'POST'])
 def insert():
     if request.method == 'GET':
         return render_template("insert.html")
 
-    """ else: 
+    else: 
         conn = dbi.connect()
-        crud.insert(conn, request.form['movie-tt'], request.form['movie-title'], request.form['movie-release'])
-        return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) """
+        pid = request.form['post-pid']
+        username = request.form['post-username']
+        type = request.form['post-type']
+        time = request.form['post-time']
+        title = request.form['post-title']
+        seats = request.form['post-seats']
+        special_request = request.form['post-specials']
+        if special_request == "":
+            special_request = None
+        display_now = True
+        cost = request.form['post-cost']
+        destination = ""
+        destination += request.form['post-address-name']
+        destination += ", "
+        destination += request.form['post-address-street']
+        destination += ", "
+        destination += request.form['post-address-city']
+        destination += ", "
+        destination += request.form['post-address-state']
+        destination += ", "
+        destination += request.form['post-address-zipcode']
+        cf.insertpost(conn, pid, username, type, destination, time, title, seats, special_request, display_now, cost)
+        return redirect( url_for('index') )
+        #eventually will do this and maybe flash something? 
+        #return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) 
 
 
 

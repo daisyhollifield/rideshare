@@ -7,3 +7,4 @@ def get_posts_with_user_names(conn):
     curs.execute('select * from Post inner join User using (username) order by time;')
     return curs.fetchall()
 
+    

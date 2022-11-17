@@ -18,6 +18,11 @@ method="post">
            type="text" name="post-username" required>
 </label></p>
 
+<p><label>Post Number:
+    <input 
+           type="number" name="post-pid" required>
+</label></p>
+
 <p><label>Type of Post:
     <select required name="post-type">
         <option value="">choose</option>
@@ -39,7 +44,7 @@ method="post">
 
 <p><label>Number of Seats needed/offering:
     <input 
-           type="number" name="post-title" required>
+           type="number" name="post-seats" required>
     </label></p>
 
 
@@ -63,7 +68,7 @@ method="post">
 <p>Address Details:</p>
 
 <p><label>Street Adress:
-<input type="text" name="post-address-name" placeholder="400 Chochituate Rd."required> </label></p>
+<input type="text" name="post-address-street" placeholder="400 Chochituate Rd."required> </label></p>
 
 <p><label>City:
 <input type="text" name="post-address-city" placeholder="Framingham"required> </label></p>
@@ -77,6 +82,5 @@ method="post">
 <p><input type="submit" value="Create Post!">
 </form>
 
-</form>
 
 {% endblock %}
