@@ -6,8 +6,6 @@ app = Flask(__name__)
 # one or the other of these. Defaults to MySQL (PyMySQL)
 # change comment characters to switch to SQLite
 
-#OUR GROUP IS THE BEST GROUP EVER! 
-
 
 import cs304dbi as dbi
 dbi.conf('rideshare_db')
@@ -68,6 +66,18 @@ def formecho():
 def testform():
     # these forms go to the formecho route
     return render_template('testform.html')
+
+@app.route('/createpost/', methods =['GET', 'POST'])
+def insert():
+    if request.method == 'GET':
+        return render_template("insert.html")
+
+    """ else: 
+        conn = dbi.connect()
+        crud.insert(conn, request.form['movie-tt'], request.form['movie-title'], request.form['movie-release'])
+        return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) """
+
+
 
 
 @app.before_first_request

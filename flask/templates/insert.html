@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<p>Click to <a href="{{ url_for('index') }}">return to the main page</a>.</p>
+
+<h1>Create a post!</h1>
+
+<p>If you would like to make a ride request or ride offer post to be displayed to others, fill out this form!</p>>
+
+<form action="{{url_for('insert')}}"
+method="post">
+<!-- modern browsers will insist that
+ "required" elemements are non-empty -->
+ <p>Basics:</p>
+
+<p><label>Username:
+    <input 
+           type="text" name="post-username" required>
+</label></p>
+
+<p><label>Type of Post:
+    <select required name="post-type">
+        <option value="">choose</option>
+        <option value="driver">Giving a ride</option>
+        <option value="rider">Looking for a ride</option>
+    </select>
+</label></p>
+
+<p><label>Title of Post:
+<input 
+       type="text" name="post-title" placeholder="Late night trip to Target!"required>
+</label></p>
+
+<p><label>Name of Destination:
+    <input type="text" name="post-address-name" placeholder="Target"required> </label></p>
+
+<br>
+<p>More details:</p>
+
+<p><label>Number of Seats needed/offering:
+    <input 
+           type="number" name="post-title" required>
+    </label></p>
+
+
+<p><label>Date + Time of Ride wanted/offering:
+<input 
+       type="datetime-local" name="post-time" required>
+</label> 
+
+<p><label>Special requests/specifal offers:
+
+    <input 
+           type="text" name="post-specials" placeholder="need big trunk">
+    </label></p>
+
+    <p><label>Price ($) charging/willing to pay:
+        <input 
+               type="number" name="post-cost" placeholder=5 required>
+        </label></p>
+
+<br>
+<p>Address Details:</p>
+
+<p><label>Street Adress:
+<input type="text" name="post-address-name" placeholder="400 Chochituate Rd."required> </label></p>
+
+<p><label>City:
+<input type="text" name="post-address-city" placeholder="Framingham"required> </label></p>
+
+<p><label>State:
+<input type="text" name="post-address-state" placeholder="MA"required> </label></p>
+
+<p><label>Zipcode:
+<input type="number" name="post-address-zipcode" placeholder="01701"required> </label></p>
+
+<p><input type="submit" value="Create Post!">
+</form>
+
+</form>
+
+{% endblock %}
