@@ -18,11 +18,17 @@ HTML {
 
 form{
     background-color: peachpuff;
+    float: left;
+    margin: 0px 25px 0px 25px;
+    padding: 10px;
+    line-height: 25px;
 }
 .post-block {
     width: 600px;
     padding: 10px;
-    margin: 10px;
+    margin: auto;
+    margin-left: 225px;
+    margin-bottom: 15px;
   }
 
 #driver-block{
