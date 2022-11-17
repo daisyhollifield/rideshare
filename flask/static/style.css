@@ -45,24 +45,24 @@ form{
 
 .driver-info-block{
     margin: 5px;
-    background-color: #caf4ed;
+    background-color: #c2f6bb;
     line-height: 5px;
     padding: 5px;
 }
 
 .rider-info-block{
     margin: 5px;
-    background-color: #c2f6bb;
+    background-color: #caf4ed;
     line-height: 5px;
     padding: 5px;
 }
 
 #offering{
-    background-color: #97d1ca;
+    background-color: #8ad281;
 }
 
 #seeking{
-    background-color: #8ad281;
+    background-color: #97d1ca;
 }
 
 
