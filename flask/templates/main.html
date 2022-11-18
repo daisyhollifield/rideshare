@@ -45,7 +45,19 @@
     {% else %}
     <div class ="rider-info-block" id="ride-block">
     {% endif %}
-        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.time()}} </p>
+    {%if post.time.hour < 12 %}
+        {%if post.time.minute < 10 %}
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour}}:0{{post.time.minute}}am</p>
+        {% else %}
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour}}:{{post.time.minute}}am</p>
+        {% endif %}
+    {% else %}
+        {%if post.time.minute < 10 %}
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour-12}}:0{{post.time.minute}}pm</p>
+        {% else %}
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour-12}}:{{post.time.minute}}pm</p>
+        {% endif %}
+    {% endif %}
         <p>Seats: {{post.seats}}</p>
         <p>Cost: ${{post.cost}}</p>
         <p>Special Request: {{post.special_request}}</p>
