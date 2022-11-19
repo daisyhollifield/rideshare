@@ -43,7 +43,6 @@ def insert():
 
     else: 
         conn = dbi.connect()
-        pid = request.form['post-pid']
         username = request.form['post-username']
         type = request.form['post-type']
         time = request.form['post-time']
@@ -64,11 +63,10 @@ def insert():
         destination += request.form['post-address-state']
         destination += ", "
         destination += request.form['post-address-zipcode']
-        cf.insertpost(conn, pid, username, type, destination, time, title, seats, special_request, display_now, cost)
+        cf.insertpost(conn, username, type, destination, time, title, seats, special_request, display_now, cost)
         return redirect( url_for('index') )
         #eventually will do this and maybe flash something? 
         #return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) 
-
 
 
 
