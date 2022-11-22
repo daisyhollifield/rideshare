@@ -37,6 +37,11 @@ def index():
     posts = qf.get_posts_with_user_names(conn)
     return render_template('main.html',title='Main Page', posts = posts)
 
+@app.route('/profile/<string:username>')
+def profile(username):
+    conn = dbi.connect()
+    user = qf.get_profile_info(conn, username)
+    return render_template('profile.html', user = user)
 
 
 @app.route('/myposts/', methods =['GET'])

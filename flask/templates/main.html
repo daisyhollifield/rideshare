@@ -7,6 +7,7 @@
 
 {% block main_content %}
 <h1>Wellesley College Rideshare</h1>
+<p>Students looking for drivers are posts highlighted in <b>blue</b> and students offering rides are posts highlighted in <b>green</b>.</p>
 
 <div class ="login" id = "login">
     <form>
@@ -19,7 +20,7 @@
     </div>
 
 <form>
-  <label for="place">Place:</label><br>
+  <label for="place">Destination Name:</label><br>
   <input type="text" id="place" name="place"><br>
   <label for="start">Date:</label>
   <input type="date" id="start" name="date"
@@ -45,7 +46,7 @@
     {% else %}
     <div class="rider-info-block" id="driver-block">
     {% endif %}
-        <p>User: {{post.name}} ({{post.username}})</p>
+        <p>User: {{post.name}} (<a href = "{{url_for('profile', username = username)}}">{{username}}</href></a>)</p>
         <p>Phone Number: {{post.phone_number}}</p>
     </div>
     {% if post.type == "offering" %}
@@ -62,15 +63,15 @@
     {% endif %}
     {%if post.time.hour < 12 %}
         {%if post.time.minute < 10 %}
-        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour}}:0{{post.time.minute}}am</p>
+        <p>Date: {{post.time.month}}/{{post.time.day}}/{{post.time.year}} Time: {{post.time.hour}}:0{{post.time.minute}}am</p>
         {% else %}
-        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour}}:{{post.time.minute}}am</p>
+        <p>Date: {{post.time.month}}/{{post.time.day}}/{{post.time.year}} Time: {{post.time.hour}}:{{post.time.minute}}am</p>
         {% endif %}
     {% else %}
         {%if post.time.minute < 10 %}
-        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour-12}}:0{{post.time.minute}}pm</p>
+        <p>Date: {{post.time.month}}/{{post.time.day}}/{{post.time.year}} Time: {{post.time.hour-12}}:0{{post.time.minute}}pm</p>
         {% else %}
-        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour-12}}:{{post.time.minute}}pm</p>
+        <p>Date: {{post.time.month}}/{{post.time.day}}/{{post.time.year}} Time: {{post.time.hour-12}}:{{post.time.minute}}pm</p>
         {% endif %}
     {% endif %}
         <p>Seats: {{post.seats}}</p>
