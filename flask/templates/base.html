@@ -1,3 +1,9 @@
+<!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db.
+    Base HTML file to that uses template inheritance
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+  
+
 <!doctype html>
 <html lang='en'>
 <head>
@@ -20,7 +26,8 @@
 </div>
 {% endif %}
 {% endwith %}
-            
+  
+<!-- Navigation bar  Block Begins-->
 {% block nav %}
 <nav>
   <ul>
@@ -31,6 +38,10 @@
 </nav>
 {% endblock %}
 
+<!-- Navigation bar Block Ends-->
+
+
+<!-- Main Block Begins-->
 {% block main_content %}
 <h1>Welcome!</h1>
 {% endblock %}
@@ -40,4 +51,9 @@
   {% endblock %}
   
 </body>
+
+<!-- Main Block Ends-->
+
+
+
 </html>

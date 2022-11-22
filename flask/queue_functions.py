@@ -1,4 +1,11 @@
 import cs304dbi as dbi
+
+
+# ==========================================================
+# The functions that do most of the queue and display of posting work.
+
+
+
 dbi.conf('rideshare_db')
 
 def get_posts_with_user_names(conn):

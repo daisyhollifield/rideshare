@@ -1,4 +1,9 @@
 import cs304dbi as dbi
+
+# ==========================================================
+# The CRUD functions that do most of the CRUD work.
+
+
 dbi.conf('rideshare_db')
 
 def insertpost(conn, username, type, destination, time, title, seats, special_request, display_now, cost):

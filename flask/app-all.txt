@@ -1,0 +1,526 @@
+'''Flask/PyMySQL app to post ride request and offers in the rideshare_db. 
+
+Daisy, Lindsay, and Valerie. 
+Fall 2022
+'''
+from flask import (Flask, render_template, make_response, url_for, request,
+                   redirect, flash, session, send_from_directory, jsonify)
+from werkzeug.utils import secure_filename
+app = Flask(__name__)
+
+# one or the other of these. Defaults to MySQL (PyMySQL)
+# change comment characters to switch to SQLite
+
+
+import cs304dbi as dbi
+dbi.conf('rideshare_db')
+# import cs304dbi_sqlite3 as dbi
+import queue_functions as qf
+import crud_functions as cf
+import random
+
+app.secret_key = 'your secret here'
+# replace that with a random key
+app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
+                                          'abcdefghijklmnopqrstuvxyz' +
+                                          '0123456789'))
+                           for i in range(20) ])
+
+# This gets us better error messages for certain common request errors
+app.config['TRAP_BAD_REQUEST_ERRORS'] = True
+
+@app.route('/')
+def index():
+    '''Home page has a nav bar and shows all posts in the database. Has front end for
+    login in box and query spot but not yet implemented.'''
+    conn = dbi.connect()
+    posts = qf.get_posts_with_user_names(conn)
+    return render_template('main.html',title='Main Page', posts = posts)
+
+
+
+@app.route('/myposts/', methods =['GET'])
+def showmy():
+    '''My posts page has a nav bar and will eventually shows all posts in the database
+    made by the logged in user but not yet implemented.'''
+    return render_template("myposts.html")
+
+@app.route('/createpost/', methods =['GET', 'POST'])
+def insert():
+    '''An insert post page with a form to do just that. Redirects to home page after submit.'''
+    #blank form 
+    if request.method == 'GET':
+        return render_template("insert.html")
+    #submit button was cliked
+    else: 
+        conn = dbi.connect()
+        #gettting infor from form
+        username = request.form['post-username']
+        type = request.form['post-type']
+        time = request.form['post-time']
+        title = request.form['post-title']
+        seats = request.form['post-seats']
+        special_request = request.form['post-specials']
+        #special_request is optional so set it to None if left blank
+        if special_request == "":
+            special_request = None
+        display_now = True
+        cost = request.form['post-cost']
+        destination = ""
+        destination += request.form['post-address-name']
+        destination += ", "
+        destination += request.form['post-address-street']
+        destination += ", "
+        destination += request.form['post-address-city']
+        destination += ", "
+        destination += request.form['post-address-state']
+        destination += ", "
+        destination += request.form['post-address-zipcode']
+        #insert the post
+        cf.insertpost(conn, username, type, destination, time, title, seats, special_request, display_now, cost)
+        return redirect( url_for('index') )
+        #eventually will do this and maybe flash something? 
+        #return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) 
+
+
+
+@app.before_first_request
+def init_db():
+    dbi.cache_cnf()
+    # set this local variable to 'wmdb' or your personal or team db
+    db_to_use = 'rideshare_db' 
+    dbi.use(db_to_use)
+    print('will connect to {}'.format(db_to_use))
+
+if __name__ == '__main__':
+    import sys, os
+    if len(sys.argv) > 1:
+        # arg, if any, is the desired port number
+        port = int(sys.argv[1])
+        assert(port>1024)
+    else:
+        port = os.getuid()
+    app.debug = True
+    app.run('0.0.0.0',port)
+import cs304dbi as dbi
+
+
+# ==========================================================
+# The functions that do most of the queue and display of posting work.
+
+
+
+dbi.conf('rideshare_db')
+
+def get_posts_with_user_names(conn):
+    """ gets info about all posts and corresponding usernames """
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from Post inner join User using (username) order by time;')
+    return curs.fetchall()
+
+    import cs304dbi as dbi
+
+# ==========================================================
+# The CRUD functions that do most of the CRUD work.
+
+
+dbi.conf('rideshare_db')
+
+def insertpost(conn, username, type, destination, time, title, seats, special_request, display_now, cost):
+    """ Inserts a post into the database. """
+    curs = dbi.dict_cursor(conn)
+    curs.execute('''
+        insert into Post(username, type, destination, time, title, seats, special_request, display_now, cost) 
+        values (%s,%s,%s,%s,%s,%s,%s,%s,%s);''',
+                      [username, type, destination, time, title, seats, special_request, display_now, cost])
+
+    conn.commit()
+    <!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db.
+    Base HTML file to that uses template inheritance
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+  
+
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <!-- for mobile-friendly pages -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=author content="">
+    <title>{{ page_title }}</title>
+    <link rel='stylesheet' href="{{url_for('static', filename = 'style.css')}}">
+    {% block head_stuff %} {% endblock %}
+</head>
+<body>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div id="messages">
+  {% for msg in messages %}
+  <p>{{msg}}</p>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+  
+<!-- Navigation bar  Block Begins-->
+{% block nav %}
+<nav>
+  <ul>
+    <li><a href="{{url_for('index')}}">All Posts</a></li>
+    <li><a href="{{url_for('showmy')}}">My Posts</a></li>
+    <li><a href="{{url_for('insert')}}">Create a Post</a></li>
+  </ul>
+</nav>
+{% endblock %}
+
+<!-- Navigation bar Block Ends-->
+
+
+<!-- Main Block Begins-->
+{% block main_content %}
+<h1>Welcome!</h1>
+{% endblock %}
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  {% block end_scripts %}
+  {% endblock %}
+  
+</body>
+
+<!-- Main Block Ends-->
+
+
+
+</html>
+<!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db.  
+    HTML file that implements the create post form page of the app
+    by extending Base HTML file
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+
+{% extends "base.html" %}
+
+{% block main_content %}
+<h1>Create a post!</h1>
+
+<p>If you would like to make a ride request or ride offer post to be displayed to others, fill out this form!</p>
+
+<form action="{{url_for('insert')}}"
+method="post">
+<!-- modern browsers will insist that
+ "required" elemements are non-empty -->
+ <p>Basics:</p>
+
+<p><label>Username:
+    <input 
+           type="text" name="post-username" required>
+</label></p>
+
+
+<p><label>Type of Post:
+    <select required name="post-type">
+        <option value="">choose</option>
+        <option value="offering">Giving a ride</option>
+        <option value="looking for">Looking for a ride</option>
+    </select>
+</label></p>
+
+<p><label>Title of Post:
+<input 
+       type="text" name="post-title" placeholder="Late night trip to Target!"required>
+</label></p>
+
+<p><label>Name of Destination:
+    <input type="text" name="post-address-name" placeholder="Target"required> </label></p>
+
+<br>
+<p>More details:</p>
+
+<p><label>Number of Seats needed/offering:
+    <input 
+           type="number" name="post-seats" required>
+    </label></p>
+
+
+<p><label>Date + Time of Ride wanted/offering:
+<input 
+       type="datetime-local" name="post-time" required>
+</label> 
+
+<p><label>Special requests/specifal offers:
+
+    <input 
+           type="text" name="post-specials" placeholder="need big trunk">
+    </label></p>
+
+    <p><label>Price ($) charging/willing to pay:
+        <input 
+               type="number" name="post-cost" placeholder=5 required>
+        </label></p>
+
+<br>
+<p>Address Details:</p>
+
+<p><label>Street Adress:
+<input type="text" name="post-address-street" placeholder="400 Chochituate Rd."required> </label></p>
+
+<p><label>City:
+<input type="text" name="post-address-city" placeholder="Framingham"required> </label></p>
+
+<p><label>State:
+<input type="text" name="post-address-state" placeholder="MA"required> </label></p>
+
+<p><label>Zipcode:
+<input type="number" name="post-address-zipcode" placeholder="01701"required> </label></p>
+
+<p><input type="submit" value="Create Post!">
+</form>
+
+
+{% endblock %}
+<!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db. 
+    HTML file that implements the home page of the app
+    by extending Base HTML file
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+{% extends "base.html" %}
+
+{% block main_content %}
+<h1>Wellesley College Rideshare</h1>
+
+<div class ="login" id = "login">
+    <form>
+        <label for="username">Username:</label><br>
+        <p><input type="text" id="username" name="username"></p>
+        <label for="password">Password:</label><br>
+        <p><input type="text" id="password" name="password"></p>
+        <p>Not yet implemented.</p>
+    </form>
+    </div>
+
+<form>
+  <label for="place">Place:</label><br>
+  <input type="text" id="place" name="place"><br>
+  <label for="start">Date:</label>
+  <input type="date" id="start" name="date"
+       value="2022-07-22"
+       min="2018-01-01" max="2018-12-31"><br>
+  <label for="time">Time Requested:</label><br>
+  <input type="time" id="time" name="time"
+  min="09:00" max="18:00" required>
+     
+</form>
+
+
+
+{% for post in posts %}
+{% if post.type == "offering" %}
+<div class ="post-block" id = "offering">
+{% else %}
+<div class ="post-block" id = "seeking">
+{% endif %}
+    <h3>{{post.title}}</h3> 
+    {% if post.type == "offering" %}
+    <div class="driver-info-block" id="driver-block">
+    {% else %}
+    <div class="rider-info-block" id="driver-block">
+    {% endif %}
+        <p>User: {{post.name}} ({{post.username}})</p>
+        <p>Phone Number: {{post.phone_number}}</p>
+    </div>
+    {% if post.type == "offering" %}
+    <div class="driver-info-block" id="destination-block">
+    {% else %}
+    <div class="rider-info-block" id="destination-block">
+    {% endif %}
+        <p>{{post.destination}}</p>
+    </div>
+    {% if post.type == "offering" %}
+    <div class ="driver-info-block" id="ride-block">
+    {% else %}
+    <div class ="rider-info-block" id="ride-block">
+    {% endif %}
+    {%if post.time.hour < 12 %}
+        {%if post.time.minute < 10 %}
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour}}:0{{post.time.minute}}am</p>
+        {% else %}
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour}}:{{post.time.minute}}am</p>
+        {% endif %}
+    {% else %}
+        {%if post.time.minute < 10 %}
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour-12}}:0{{post.time.minute}}pm</p>
+        {% else %}
+        <p>Date: {{post.time.month}}/{{post.time.day}} Time: {{post.time.hour-12}}:{{post.time.minute}}pm</p>
+        {% endif %}
+    {% endif %}
+        <p>Seats: {{post.seats}}</p>
+        <p>Cost: ${{post.cost}}</p>
+        <p>Special Request: {{post.special_request}}</p>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
+<!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db.  
+    HTML file that implements the My Posts page of the app
+    by extending Base HTML file
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+{% extends "base.html" %}
+
+{% block main_content %}
+<h1>My Posts!</h1>
+
+<p>Here are all of your posts:</p>
+
+<p> Not yet implemented. Eventually all posts made by this user will appear here. </p>
+
+{% endblock %}
+/* the --color-header and others are CSS variables, which we access later. 
+*/
+
+HTML {
+    --color-header: #264653;  /* color for H1-H6 and others. was deepskyblue but poor contrast. */
+    --color-hilite: #e9c46a;  /* was red, but this avoids WAVE contrast errors */ 
+    --color-focus: #f4a261;
+    --font-family: Georgia;
+    font-family: var(--font-family)
+}
+
+/* For flashed messages; make them stand out using red and italics */
+
+#messages {
+    color: var(--color-hilite);
+    font-style: italic;
+}
+
+form{
+    background-color: peachpuff;
+    float: left;
+    margin: 0px 25px 0px 25px;
+    padding: 10px;
+    line-height: 25px;
+}
+.post-block {
+    width: 600px;
+    padding: 10px;
+    margin: auto;
+    margin-left: 225px;
+    margin-bottom: 15px;
+  }
+  
+  .login{
+    margin: 5px;
+    background-color: #add8e6;
+    line-height: 5px;
+    padding: 5px;
+    margin-top: 1px;
+    margin-right: 2px;
+    position:absolute;
+    top:0;
+    right:0;
+}
+#driver-block{
+    color:rgb(85, 85, 135);
+}
+
+#destination-block{
+    color:rgb(135, 93, 85);
+}
+
+#ride-block{
+    color:rgb(155, 72, 56);
+}
+
+.driver-info-block{
+    margin: 5px;
+    background-color: #c2f6bb;
+    line-height: 5px;
+    padding: 5px;
+}
+
+.rider-info-block{
+    margin: 5px;
+    background-color: #caf4ed;
+    line-height: 5px;
+    padding: 5px;
+}
+
+#offering{
+    background-color: #8ad281;
+}
+
+#seeking{
+    background-color: #97d1ca;
+}
+
+
+
+body {background-color: #FFCCBB;}
+
+h1 {
+    font-size: 200%;
+    color: var(--color-header);
+}
+
+h2, h3 {
+    color: var(--color-header);
+}
+    
+
+/* for a simple navbar. Talk to Scott if you want drop-downs. */
+nav > ul {
+    display: flex;
+    flex-direction: row;
+    color: #2a9d8f
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    color: #E76F51
+
+}
+
+nav > ul > li {
+    flex: 0 0 auto;
+    width: 15em; 
+}
+
+nav button, nav a {
+    display: block;
+    box-sizing: border-box; /* easier to make button and A the same size */
+    width: 100%;
+    height: 40px;
+    padding: 0px;
+    padding-bottom: 5px;
+    background-color: var(--color-header); /* was #3498db */
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    /* Firefox uses font -apple-system unless I repeat the font spec here. */
+    font-family: var(--font-family);
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: white;
+    
+}
+
+/* Only the top-level buttons are centered; lower ones are left-aligned. */
+nav > ul > li > button , nav > ul > li > a {
+    text-align: center;
+}
+
+/* because of the margin trick, this can only be used for the last element */
+
+nav li.right {
+    margin-left: auto;
+}
+
+nav button:hover, button:focus, nav a:hover, nav a:focus {
+    background-color: var(--color-focus);
+}
+
