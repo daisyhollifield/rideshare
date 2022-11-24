@@ -35,7 +35,9 @@ def index():
     login in box and query spot but not yet implemented.'''
     conn = dbi.connect()
     posts = qf.get_posts_with_user_names(conn)
-    return render_template('main.html',title='Main Page', posts = posts)
+    users = qf.get_all_users(conn)
+    states = qf.get_all_states(conn)
+    return render_template('main.html',title='Main Page', posts = posts, users=users, states=states)
 
 @app.route('/profile/<string:username>')
 def profile(username):

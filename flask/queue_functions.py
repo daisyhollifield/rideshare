@@ -20,3 +20,20 @@ def get_profile_info(conn, username):
     curs.execute('select * from User where username = %s;', [username])
     return curs.fetchone()
     
+def get_all_users(conn):
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from User order by username')
+    return curs.fetchall()
+
+def get_all_states(conn):
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select destination from Post')
+    destinations = curs.fetchall()
+    states = []
+    for d in destinations:
+        print(d)
+        dlst = d['destination'].split(", ")
+        state = dlst[3][0:2]
+        if state not in states:
+            states.append(state)
+    return sorted(states)

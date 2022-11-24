@@ -20,15 +20,35 @@
     </div>
 
 <form>
-  <label for="place">Destination Name:</label><br>
-  <input type="text" id="place" name="place"><br>
-  <label for="start">Date:</label>
-  <input type="date" id="start" name="date"
-       value="2022-07-22"
-       min="2018-01-01" max="2018-12-31"><br>
-  <label for="time">Time Requested:</label><br>
-  <input type="time" id="time" name="time"
-  min="09:00" max="18:00" required>
+  <label for="destination-name">Destination Name:</label><br>
+  <input type="text" name="destination-name"><br>
+  <label for="city">City:</label><br>
+  <input type="text" name="city"><br>
+  <label for="state">State:</label>
+  <select id="menu-state">
+  <option value="none"></option>
+    {% for state in states %}
+    <option value="{{state}}">{{state}}</option>
+    {% endfor %}
+ </select><br>
+  <label for="user">User:</label><br>
+  <select id="menu-user">
+    <option value="none"></option>
+    {% for user in users %}
+    <option value="{{user.username}}">{{user.username}} ({{user.name}})</option>
+    {% endfor %}
+  </select><br>
+  <label for="date">Date:</label>
+  <input type="date" name="date"><br>
+  <label for="time">Time:</label><br>
+  <input type="time" name="time"><br>
+  <label for="min-cost">Min Cost ($):</label><br>
+  <input type="number" name="min-cost"><br>
+  <label for="max-cost">Max Cost ($):</label><br>
+  <input type="number" name="max-cost"><br>
+  <label for="seats">Seats:</label><br>
+  <input type="number" name="seats"><br>
+  <p><input type="submit" value="Search"></p>
      
 </form>
 
@@ -46,7 +66,7 @@
     {% else %}
     <div class="rider-info-block" id="driver-block">
     {% endif %}
-        <p>User: {{post.name}} (<a href = "{{url_for('profile', username = username)}}">{{username}}</href></a>)</p>
+        <p>User: {{post.name}} (<a href = "{{ url_for( 'profile', username = post.username ) }}">{{post.username}}</href></a>)</p>
         <p>Phone Number: {{post.phone_number}}</p>
     </div>
     {% if post.type == "offering" %}
