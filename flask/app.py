@@ -48,11 +48,12 @@ def profile(username):
 @app.route('/result')
 def result():
     conn = dbi.connect()
+    user = request.args.get('menu-user')
     seats = request.args.get('seats')
     cost = request.args.get('cost')
     users = qf.get_all_users(conn)
     states = qf.get_all_states(conn)
-    posts = qf.get_posts_by_seats_and_cost(conn, seats, cost)
+    posts = qf.get_posts_by_user_and_seats_and_cost(conn, user, seats, cost)
     return render_template('main.html',title='Main Page', posts = posts, users = users, states=states)
 
 @app.route('/myposts/', methods =['GET'])

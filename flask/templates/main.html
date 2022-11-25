@@ -22,6 +22,8 @@
 <form method= GET action="{{url_for('result')}}">
   <label for="destination-name">Destination Name:</label><br>
   <input type="text" name="destination-name"><br>
+  <label for="street-address">Street Address:</label><br>
+  <input type="text" name="street-address"><br>
   <label for="city">City:</label><br>
   <input type="text" name="city"><br>
   <label for="state">State:</label>
@@ -31,8 +33,10 @@
     <option value="{{state}}">{{state}}</option>
     {% endfor %}
  </select><br>
+ <label for="zip">Zip Code:</label><br>
+  <input type="text" name="zip"><br>
   <label for="user">User:</label><br>
-  <select id="menu-user">
+  <select id="menu-user" name = "menu-user">
     <option value="none"></option>
     {% for user in users %}
     <option value="{{user.username}}">{{user.username}} ({{user.name}})</option>
