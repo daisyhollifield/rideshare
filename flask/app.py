@@ -45,6 +45,15 @@ def profile(username):
     user = qf.get_profile_info(conn, username)
     return render_template('profile.html', user = user)
 
+@app.route('/result')
+def result():
+    conn = dbi.connect()
+    seats = request.args.get('seats')
+    cost = request.args.get('cost')
+    users = qf.get_all_users(conn)
+    states = qf.get_all_states(conn)
+    posts = qf.get_posts_by_seats_and_cost(conn, seats, cost)
+    return render_template('main.html',title='Main Page', posts = posts, users = users, states=states)
 
 @app.route('/myposts/', methods =['GET'])
 def showmy():

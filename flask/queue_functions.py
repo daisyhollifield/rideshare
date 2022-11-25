@@ -31,9 +31,25 @@ def get_all_states(conn):
     destinations = curs.fetchall()
     states = []
     for d in destinations:
-        print(d)
         dlst = d['destination'].split(", ")
         state = dlst[3][0:2]
         if state not in states:
             states.append(state)
     return sorted(states)
+
+def get_posts_by_seats_and_cost(conn, seats, cost):
+    curs = dbi.dict_cursor(conn)
+    if seats == '':
+        seats_string = ''
+    else:
+        seats_string = 'where seats = {}'.format(seats) #is this good enough for injection attacks?
+    
+    if cost == '':
+        cost_string = ''
+    else:
+        if seats_string == '' and name_string == '':
+            cost_string = 'where cost = {}'.format(cost) #is this good enough for injection attacks?
+        else:
+            cost_string = ' and cost = {}'.format(cost) #is this good enough for injection attacks?
+    curs.execute('select * from Post inner join User using (username)' + seats_string + cost_string + ' order by time;')
+    return curs.fetchall()

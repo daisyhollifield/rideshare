@@ -19,7 +19,7 @@
     </form>
     </div>
 
-<form>
+<form method= GET action="{{url_for('result')}}">
   <label for="destination-name">Destination Name:</label><br>
   <input type="text" name="destination-name"><br>
   <label for="city">City:</label><br>
@@ -42,10 +42,8 @@
   <input type="date" name="date"><br>
   <label for="time">Time:</label><br>
   <input type="time" name="time"><br>
-  <label for="min-cost">Min Cost ($):</label><br>
-  <input type="number" name="min-cost"><br>
-  <label for="max-cost">Max Cost ($):</label><br>
-  <input type="number" name="max-cost"><br>
+  <label for="cost">Cost ($):</label><br>
+  <input type="number" name="cost"><br>
   <label for="seats">Seats:</label><br>
   <input type="number" name="seats"><br>
   <p><input type="submit" value="Search"></p>
