@@ -11,7 +11,7 @@ dbi.conf('rideshare_db')
 def get_posts_with_usernames(conn):
     """ gets info about all posts and corresponding usernames """
     curs = dbi.dict_cursor(conn)
-    curs.execute('select * from Post inner join User using (username) where display_now = True order by date;')
+    curs.execute('select * from Post inner join User using (username) where display_now = True order by date, time;')
     return curs.fetchall()
 
 def get_profile_info(conn, username):
@@ -129,5 +129,5 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
         else:
             cost_string = ' and cost = %s'
     
-    curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + ' order by date;', args_lst)
+    curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + ' order by date, time;', args_lst)
     return curs.fetchall()
