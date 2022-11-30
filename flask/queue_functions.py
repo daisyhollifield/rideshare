@@ -37,78 +37,97 @@ def get_all_states(conn):
     return sorted(states)
 
 def get_result_posts(conn, destination, street_address, city, state, zipcode, user, date, time, seats, cost):
+    args_lst = []
     curs = dbi.dict_cursor(conn)
     if destination == "":
         destination_string = ''
     else:
-        destination_string = 'where destination = "{}"'.format(destination) #is this good enough for injection attacks?
+        destination_string = 'where destination = %s'
+        args_lst.append(destination)
+
     if street_address == "":
         street_address_string = ''
     else:
         if destination_string == "":
-            street_address_string = 'where street_address = "{}"'.format(street_address) #is this good enough for injection attacks?
+            street_address_string = 'where street_address = %s'
+            args_lst.append(street_address)
         else:
-            street_address_string = ' and street_address = "{}"'.format(street_address) #is this good enough for injection attacks?
+            street_address_string = ' and street_address = %s' 
+            args_lst.append(street_address)
     if city == "":
         city_string = ""
     else:
         if destination_string == "" and street_address_string == "":
-            city_string = 'where city = "{}"'.format(city) #is this good enough for injection attacks?
+            city_string = 'where city = %s'
+            args_lst.append(city)
         else:
-            city_string = ' and city = "{}"'.format(city) #is this good enough for injection attacks?
+            city_string = ' and city = %s'
+            args_lst.append(city)
     if state == "none":
         state_string = ""
     else:
         if destination_string == "" and street_address_string == "" and city_string == "":
-            state_string = 'where state = "{}"'.format(state) #is this good enough for injection attacks?
+            state_string = 'where state = %s'
+            args_lst.append(state)
         else:
-            state_string = ' and state = "{}"'.format(state) #is this good enough for injection attacks?
+            state_string = ' and state = %s'
+            args_lst.append(state)
     
     if zipcode == "":
         zipcode_string = ""
     else:
         if destination_string == "" and street_address_string == "" and city_string == "" and state_string == "":
-            zipcode_string = 'where zipcode = "{}"'.format(zipcode) #is this good enough for injection attacks?
+            zipcode_string = 'where zipcode = %s'
+            args_lst.append(zipcode)
         else:
-            zipcode_string = ' and zipcode = "{}"'.format(zipcode) #is this good enough for injection attacks?
+            zipcode_string = ' and zipcode = %s'
+            args_lst.append(zipcode)
     if user == "none":
         user_string = ''
     else:
         if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "":
-            user_string = 'where username = "{}"'.format(user) #is this good enough for injection attacks?
+            user_string = 'where username = %s'
+            args_lst.append(user)
         else:
-            user_string = ' and username = "{}"'.format(user) #is this good enough for injection attacks?
+            user_string = ' and username = %s'
+            args_lst.append(user)
 
     if date == "":
         date_string = ""
     else:
         if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "" and user_string == "":
-            date_string = 'where date = "{}"'.format(date) #is this good enough for injection attacks?
+            date_string = 'where date = %s'
+            args_lst.append(date)
         else:
-            date_string = ' and date = "{}"'.format(date) #is this good enough for injection attacks?
+            date_string = ' and date = %s'
+            args_lst.append(date)
 
     if time == "":
         time_string = ""
     else:
         if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "" and user_string == "" and date_string == "":
-            time_string = 'where time = "{}"'.format(time) #is this good enough for injection attacks?
+            time_string = 'where time = %s'
+            args_lst.append(time)
         else:
-            time_string = ' and time = "{}"'.format(time) #is this good enough for injection attacks?
+            time_string = ' and time = %s'
+            args_lst.append(time)
     if seats == '':
         seats_string = ''
     else:
         if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "" and user_string == '' and date_string == '' and time_string == '':
-            seats_string = 'where seats = {}'.format(seats) #is this good enough for injection attacks?
+            seats_string = 'where seats = %s'
+            args_lst.append(seats)
         else:
-            seats_string = ' and seats = {}'.format(seats) #is this good enough for injection attacks?
+            seats_string = ' and seats = %s'
+            args_lst.append(seats)
     
     if cost == '':
         cost_string = ''
     else:
         if destination_string == '' and street_address_string == "" and city_string== "" and state_string == "" and zipcode_string == "" and user_string == '' and date_string == "" and time_string == '' and seats_string == '':
-            cost_string = 'where cost = {}'.format(cost) #is this good enough for injection attacks?
+            cost_string = 'where cost = %s'
         else:
-            cost_string = ' and cost = {}'.format(cost) #is this good enough for injection attacks?
+            cost_string = ' and cost = %s'
     
-    curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + ' order by date;')
+    curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + ' order by date;', args_lst)
     return curs.fetchall()
