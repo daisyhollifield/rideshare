@@ -38,7 +38,6 @@ def get_all_states(conn):
 
 def get_result_posts(conn, destination, street_address, city, state, zipcode, user, date, time, seats, cost):
     curs = dbi.dict_cursor(conn)
-    print(state)
     if destination == "":
         destination_string = ''
     else:
@@ -78,9 +77,7 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
         if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "":
             user_string = 'where username = "{}"'.format(user) #is this good enough for injection attacks?
         else:
-            print('herreeee')
             user_string = ' and username = "{}"'.format(user) #is this good enough for injection attacks?
-            print(user_string)
 
     if date == "":
         date_string = ""
