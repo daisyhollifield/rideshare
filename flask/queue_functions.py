@@ -8,10 +8,10 @@ import cs304dbi as dbi
 
 dbi.conf('rideshare_db')
 
-def get_posts_with_user_names(conn):
+def get_posts_with_usernames(conn):
     """ gets info about all posts and corresponding usernames """
     curs = dbi.dict_cursor(conn)
-    curs.execute('select * from Post inner join User using (username) order by time;')
+    curs.execute('select * from Post inner join User using (username) order by date;')
     return curs.fetchall()
 
 def get_profile_info(conn, username):
@@ -27,14 +27,13 @@ def get_all_users(conn):
 
 def get_all_states(conn):
     curs = dbi.dict_cursor(conn)
-    curs.execute('select destination from Post')
-    destinations = curs.fetchall()
+    curs.execute('select `state` from Post')
+    all_states = curs.fetchall()
     states = []
-    for d in destinations:
-        dlst = d['destination'].split(", ")
-        state = dlst[3][0:2]
-        if state not in states:
-            states.append(state)
+    for s in all_states:
+        s_name = s['state']
+        if s_name not in states:
+            states.append(s_name)
     return sorted(states)
 
 def get_posts_by_user_and_seats_and_cost(conn, user, seats, cost):

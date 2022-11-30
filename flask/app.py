@@ -34,7 +34,7 @@ def index():
     '''Home page has a nav bar and shows all posts in the database. Has front end for
     login in box and query spot but not yet implemented.'''
     conn = dbi.connect()
-    posts = qf.get_posts_with_user_names(conn)
+    posts = qf.get_posts_with_usernames(conn)
     users = qf.get_all_users(conn)
     states = qf.get_all_states(conn)
     return render_template('main.html',title='Main Page', posts = posts, users=users, states=states)
@@ -74,6 +74,7 @@ def insert():
         #gettting infor from form
         username = request.form['post-username']
         type = request.form['post-type']
+        date = request.form['post-date'].replace("-", "")
         time = request.form['post-time']
         title = request.form['post-title']
         seats = request.form['post-seats']
@@ -83,22 +84,16 @@ def insert():
             special_request = None
         display_now = True
         cost = request.form['post-cost']
-        destination = ""
-        destination += request.form['post-address-name']
-        destination += ", "
-        destination += request.form['post-address-street']
-        destination += ", "
-        destination += request.form['post-address-city']
-        destination += ", "
-        destination += request.form['post-address-state']
-        destination += ", "
-        destination += request.form['post-address-zipcode']
+        destination = request.form['post-address-name']
+        street_address = request.form['post-address-street']
+        city = request.form['post-address-city']
+        state = request.form['post-address-state']
+        zipcode = request.form['post-address-zipcode']
         #insert the post
-        cf.insertpost(conn, username, type, destination, time, title, seats, special_request, display_now, cost)
+        cf.insertpost(conn, username, type, date, time, destination, street_address, city, state, zipcode, title, seats, special_request, display_now, cost)
         return redirect( url_for('index') )
         #eventually will do this and maybe flash something? 
         #return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) 
-
 
 
 @app.before_first_request
