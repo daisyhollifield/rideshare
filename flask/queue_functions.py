@@ -126,8 +126,10 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     else:
         if destination_string == '' and street_address_string == "" and city_string== "" and state_string == "" and zipcode_string == "" and user_string == '' and date_string == "" and time_string == '' and seats_string == '':
             cost_string = 'where cost = %s'
+            args_lst.append(cost)
         else:
             cost_string = ' and cost = %s'
+            args_lst.append(cost)
     if destination_string == '' and street_address_string == "" and city_string== "" and state_string == "" and zipcode_string == "" and user_string == '' and date_string == "" and time_string == '' and seats_string == '' and cost_string == '':
         display_now_string = 'where display_now = True'
     else:
