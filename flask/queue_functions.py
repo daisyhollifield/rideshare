@@ -128,6 +128,9 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
             cost_string = 'where cost = %s'
         else:
             cost_string = ' and cost = %s'
-    
-    curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + ' order by date, time;', args_lst)
+    if destination_string == '' and street_address_string == "" and city_string== "" and state_string == "" and zipcode_string == "" and user_string == '' and date_string == "" and time_string == '' and seats_string == '' and cost_string == '':
+        display_now_string = 'where display_now = True'
+    else:
+        display_now_string = ' and display_now = True'
+    curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + display_now_string + ' order by date, time;', args_lst)
     return curs.fetchall()
