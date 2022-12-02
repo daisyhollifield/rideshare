@@ -13,4 +13,17 @@ def insertpost(conn, username, type, date, time, destination, street_address, ci
         values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);''',
                       [username, type, date, time, destination, street_address, city, state, zipcode, title, seats, special_request, display_now, cost])
     conn.commit()
-    
+
+
+def insertUser(conn, username, name):
+    curs = dbi.dict_cursor(conn)
+    curs.execute(''' insert into User(username,name)
+        values (%s,%s);''',
+                      [username, name])
+    conn.commit()
+
+def updateUser(conn, username, phone_number, class_year, major, hometown):
+    curs = dbi.dict_cursor(conn)
+    curs.execute('update User set phone_number = %s, class_year = %s,  major = %s, hometown = %s where username = %s',
+             [phone_number, class_year, major, hometown, username])
+    conn.commit()

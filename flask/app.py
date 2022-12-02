@@ -29,21 +29,120 @@ app.secret_key = ''.join([ random.choice(('ABCDEFGHIJKLMNOPQRSTUVXYZ' +
 # This gets us better error messages for certain common request errors
 app.config['TRAP_BAD_REQUEST_ERRORS'] = True
 
+# for CAS
+from flask_cas import CAS
+
+CAS(app)
+
+app.config['CAS_SERVER'] = 'https://login.wellesley.edu:443'
+app.config['CAS_LOGIN_ROUTE'] = '/module.php/casserver/cas.php/login'
+app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
+app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
+app.config['CAS_AFTER_LOGIN'] = 'logged_in'
+# the following doesn't work :-(
+app.config['CAS_AFTER_LOGOUT'] = 'after_logout'
+
+
+
 @app.route('/')
 def index():
     '''Home page has a nav bar and shows all posts in the database. Has front end for
     login in box and query spot but not yet implemented.'''
+
+    if 'CAS_USERNAME' in session:
+        is_logged_in = True
+        username = session['CAS_USERNAME']
+    else:
+        is_logged_in = False
+        username = None
+    
+    
     conn = dbi.connect()
     posts = qf.get_posts_with_usernames(conn)
     users = qf.get_all_users(conn)
     states = qf.get_all_states(conn)
-    return render_template('main.html',title='Main Page', posts = posts, users=users, states=states)
+    return render_template('main.html',title='Main Page', posts = posts, users=users, states=states, username=username, is_logged_in=is_logged_in)
+    
+
+@app.route('/logged_in/')
+def logged_in():
+    conn = dbi.connect()
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    if 'CAS_ATTRIBUTES' in session:
+        attribs = session['CAS_ATTRIBUTES']
+        first_name = attribs['cas:givenName']
+        last_name = attribs['cas:sn']
+        name_to_insert = first_name + " " + last_name
+    #user already in table
+    if qf.userExists(conn, username):
+        return redirect( url_for('index') )
+    #new user
+    else:  
+        cf.insertUser(conn, username, name_to_insert)
+        return redirect(url_for('update_user', username = username))
+
+
+@app.route('/updateprofile/', methods =['GET', 'POST'])
+def update_user():
+    if 'CAS_USERNAME' in session:
+        their_username = session['CAS_USERNAME']
+        conn = dbi.connect()
+        if request.method == 'GET':
+            #blank complete profile form 
+            #show them their current info!!!
+            this_profile = qf.get_profile_info(conn, their_username)
+            current_pn=this_profile['phone_number']
+            current_cy=this_profile['class_year']
+            current_mj=this_profile['major']
+            current_ht=this_profile['hometown']
+            return render_template("updateProfile.html", username = their_username, current_pn=current_pn, current_cy=current_cy, current_mj=current_mj, current_ht=current_ht)
+        else: 
+            #pre form info: 
+            this_profile = qf.get_profile_info(conn, their_username)
+            current_pn=this_profile['phone_number']
+            current_cy=this_profile['class_year']
+            current_mj=this_profile['major']
+            current_ht=this_profile['hometown']
+            #make variables from form data
+            #figure out which varibles were filled out
+            phone_number = request.form['phone_number']
+            pn_empty = (phone_number == "")
+            if pn_empty:
+                phone_number = current_pn
+            class_year = request.form['class_year']
+            cy_empty = (class_year == "")
+            if cy_empty:
+                class_year = current_cy
+            major = request.form['major']
+            mj_empty = (major == "")
+            if mj_empty: 
+                major = current_mj
+            hometown = request.form['hometown']
+            ht_empty = (hometown == "")
+            if ht_empty: 
+                hometown = current_ht
+            cf.updateUser(conn, username=their_username, phone_number=phone_number, class_year=class_year, major=major, hometown=hometown)
+    return redirect( url_for('profile', username = their_username))   
+
+
+@app.route('/after_logout/')
+def after_logout():
+    return redirect( url_for('index') )
+
 
 @app.route('/profile/<string:username>')
 def profile(username):
     conn = dbi.connect()
     user = qf.get_profile_info(conn, username)
     return render_template('profile.html', user = user)
+
+
+@app.route('/myprofile/')
+def myprofile():
+    if 'CAS_USERNAME' in session:
+        username = session['CAS_USERNAME']
+    return redirect( url_for('profile', username = username)) 
 
 @app.route('/result')
 def result():
@@ -79,7 +178,9 @@ def insert():
     else: 
         conn = dbi.connect()
         #gettting infor from form
-        username = request.form['post-username']
+        if 'CAS_USERNAME' in session:
+            username = session['CAS_USERNAME']
+        #username = request.form['post-username']
         type = request.form['post-type']
         date = request.form['post-date'].replace("-", "")
         time = request.form['post-time']
@@ -111,12 +212,18 @@ def init_db():
     dbi.use(db_to_use)
     print('will connect to {}'.format(db_to_use))
 
+application = app
+
+
 if __name__ == '__main__':
     import sys, os
     if len(sys.argv) > 1:
         # arg, if any, is the desired port number
         port = int(sys.argv[1])
-        assert(port>1024)
+        if not(1943 <= port <= 1952):
+            print('For CAS, choose a port from 1943 to 1952')
+            sys.exit()
+        #may need to do back:::assert(port>1024)
     else:
         port = os.getuid()
     app.debug = True

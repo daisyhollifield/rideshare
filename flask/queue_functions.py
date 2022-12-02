@@ -112,3 +112,9 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     
     curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + ' order by date;')
     return curs.fetchall()
+
+def userExists (conn, username):
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from User where username = %s;', [username])
+    return (curs.fetchone() != None)
+    

@@ -1,0 +1,51 @@
+<!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db.  
+    HTML file that implements ?????
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+
+    {% extends "base.html" %}
+
+    {% block main_content %}
+    <h1>Update/complete your Profile!</h1>
+    
+    <p>Please use this to complete/update your profile. If you don't want to change an attribute, leave that field blank!</p>
+    
+    <form action="{{url_for('update_user', username = username)}}"
+    method="post">
+    <!-- modern browsers will insist that
+     "required" elemements are non-empty -->
+     <p>Your information:</p>
+    
+    <p>Here is your current cell phone number: {{current_pn}}</p>
+    <p><label>Your Cell Phone Number:
+        <input 
+               type="tel" name="phone_number" placeholder="123-456-7890">
+        </label></p> 
+    
+    <p>Here is your current class year: {{current_cy}}</p>
+    <p><label>Class Year:
+        <select  name="class_year">
+            <option value="">choose</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+        </select>
+    </label></p>
+    
+    <p>Here is your current major: {{current_mj}}</p>
+    <p><label>Major:
+    <input 
+           type="text" name="major" placeholder="Economics and GeoScience">
+    </label></p>
+    
+    <p>Here is your current hometown: {{current_ht}}</p>
+    <p><label>Where are you from?:
+        <input type="text" name="hometown" placeholder="Nashville, TN"> </label></p>
+    
+    <p><input type="submit" value="Complete Profile!">
+    </form>
+    
+    
+    {% endblock %}
+    

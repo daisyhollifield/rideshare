@@ -5,19 +5,31 @@
     Fall 2022 -->
 {% extends "base.html" %}
 
+{% block head_stuff %}
+
+<!-- Start of CAS STUFF-->
+        
+{% if username %}
+
+    <form method="GET" action="{{url_for('cas.logout')}}">
+      <button>logout {{username}}</button>
+    </form>
+{% else %}
+<form method="GET" action="{{url_for('cas.login')}}">
+ <button>login</button>
+</form>
+{% endif %}
+
+<!-- End of CAS STUFF-->
+
+
+{% endblock %}
+
 {% block main_content %}
 <h1>Wellesley College Rideshare</h1>
 <p>Students looking for drivers are posts highlighted in <b>blue</b> and students offering rides are posts highlighted in <b>green</b>.</p>
 
-<div class ="login" id = "login">
-    <form>
-        <label for="username">Username:</label><br>
-        <p><input type="text" id="username" name="username"></p>
-        <label for="password">Password:</label><br>
-        <p><input type="text" id="password" name="password"></p>
-        <p>Not yet implemented.</p>
-    </form>
-    </div>
+
 
 <form method= GET action="{{url_for('result')}}">
   <label for="destination-name">Destination Name:</label><br>
@@ -54,6 +66,8 @@
      
 </form>
 
+{% if is_logged_in %}
+
 {% for post in posts %}
 {% if post.type == "offering" %}
 <div class ="post-block" id = "offering">
@@ -88,5 +102,11 @@
     </div>
 </div>
 {% endfor %}
+
+{% else %}
+
+<p> <bold>Please log in to see posts.</bold> </p>
+
+{% endif %}
 
 {% endblock %}
