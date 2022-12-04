@@ -44,6 +44,9 @@ app.config['CAS_AFTER_LOGOUT'] = 'after_logout'
 
 
 
+app.config['UPLOADS'] = 'uploads'
+app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
+
 @app.route('/')
 def index():
     '''Home page has a nav bar and shows all posts in the database. Has front end for
@@ -135,7 +138,25 @@ def after_logout():
 def profile(username):
     conn = dbi.connect()
     user = qf.get_profile_info(conn, username)
-    return render_template('profile.html', user = user)
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+        '''select * from Picfile where username = %s''',
+        [username])
+    pic = curs.fetchone()
+    return render_template('profile.html', user = user, pic=pic)
+
+@app.route('/pic/<username>')
+def pic(username):
+    conn = dbi.connect()
+    curs = dbi.dict_cursor(conn)
+    numrows = curs.execute(
+        '''select filename from Picfile where username = %s''',
+        [username])
+    if numrows == 0:
+        flash('No picture for {}'.format(username))
+        return redirect(url_for('index'))
+    row = curs.fetchone()
+    return send_from_directory(app.config['UPLOADS'],row['filename'])
 
 
 @app.route('/myprofile/')
