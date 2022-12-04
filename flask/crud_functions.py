@@ -27,3 +27,11 @@ def updateUser(conn, username, phone_number, class_year, major, hometown):
     curs.execute('update User set phone_number = %s, class_year = %s,  major = %s, hometown = %s where username = %s',
              [phone_number, class_year, major, hometown, username])
     conn.commit()
+
+def updateProfilePic(conn, their_username, filename):
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+                '''insert into Picfile(username,filename) values (%s,%s)
+                   on duplicate key update filename = %s''',
+                [their_username, filename, filename])
+    conn.commit()

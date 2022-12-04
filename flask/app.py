@@ -99,7 +99,8 @@ def update_user():
             current_cy=this_profile['class_year']
             current_mj=this_profile['major']
             current_ht=this_profile['hometown']
-            return render_template("updateProfile.html", username = their_username, current_pn=current_pn, current_cy=current_cy, current_mj=current_mj, current_ht=current_ht)
+            current_pic = qf.getProfilePic(conn, their_username)
+            return render_template("updateProfile.html", pic=current_pic, username = their_username, current_pn=current_pn, current_cy=current_cy, current_mj=current_mj, current_ht=current_ht)
         else: 
             #pre form info: 
             this_profile = qf.get_profile_info(conn, their_username)
@@ -107,8 +108,11 @@ def update_user():
             current_cy=this_profile['class_year']
             current_mj=this_profile['major']
             current_ht=this_profile['hometown']
+            current_pic = qf.getProfilePic(conn, their_username)
             #make variables from form data
             #figure out which varibles were filled out
+
+            #add soemthing to check in file updload is empty
             phone_number = request.form['phone_number']
             pn_empty = (phone_number == "")
             if pn_empty:
@@ -126,7 +130,16 @@ def update_user():
             if ht_empty: 
                 hometown = current_ht
             cf.updateUser(conn, username=their_username, phone_number=phone_number, class_year=class_year, major=major, hometown=hometown)
-    return redirect( url_for('profile', username = their_username))   
+            #file stuff
+            file = request.files['pic']
+            #add if statment checks if there was an upload or not?? - ask scott
+            user_filename = file.filename
+            ext = user_filename.split('.')[-1]
+            filename = secure_filename('{}.{}'.format(their_username,ext))
+            pathname = os.path.join(app.config['UPLOADS'],filename)
+            file.save(pathname)
+            cf.updateProfilePic(conn, their_username, filename)
+            return redirect( url_for('profile', username = their_username))   
 
 
 @app.route('/after_logout/')
@@ -138,11 +151,7 @@ def after_logout():
 def profile(username):
     conn = dbi.connect()
     user = qf.get_profile_info(conn, username)
-    curs = dbi.dict_cursor(conn)
-    curs.execute(
-        '''select * from Picfile where username = %s''',
-        [username])
-    pic = curs.fetchone()
+    pic = qf.getProfilePic(conn, username)
     return render_template('profile.html', user = user, pic=pic)
 
 @app.route('/pic/<username>')

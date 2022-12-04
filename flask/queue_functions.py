@@ -141,4 +141,11 @@ def userExists (conn, username):
     curs = dbi.dict_cursor(conn)
     curs.execute('select * from User where username = %s;', [username])
     return (curs.fetchone() != None)
-    
+
+
+def getProfilePic(conn, username):   
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+        '''select * from Picfile where username = %s''',
+        [username])
+    return curs.fetchone()

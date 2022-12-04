@@ -10,11 +10,17 @@
     
     <p>Please use this to complete/update your profile. If you don't want to change an attribute, leave that field blank!</p>
     
-    <form action="{{url_for('update_user', username = username)}}"
+
+    <form action="{{url_for('update_user', username = username)}}" enctype="multipart/form-data"
     method="post">
     <!-- modern browsers will insist that
      "required" elemements are non-empty -->
      <p>Your information:</p>
+
+    <p>Here is your current profile picture: </p>
+    <img src="{{url_for('pic',username=pic['username'])}}" width=auto height="300" alt="{{pic['username']}}">
+    
+    <p><label>Profile Picture: <input type="file" name="pic"></label></p>
     
     <p>Here is your current cell phone number: {{current_pn}}</p>
     <p><label>Your Cell Phone Number:
