@@ -51,21 +51,23 @@ app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
 def index():
     '''Home page has a nav bar and shows all posts in the database. Has front end for
     login in box and query spot but not yet implemented.'''
-
-    if 'CAS_USERNAME' in session:
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('login'))
+    else:
         is_logged_in = True
         username = session['CAS_USERNAME']
+        conn = dbi.connect()
+        posts = qf.get_posts_with_usernames(conn)
+        users = qf.get_all_users(conn)
+        states = qf.get_all_states(conn)
+        return render_template('main.html',title='Main Page', posts = posts, users=users, states=states, username=username, is_logged_in=is_logged_in)
+    
+@app.route('/login/')
+def login():
+    if 'CAS_USERNAME' in session:
+        return redirect( url_for('index') )
     else:
-        is_logged_in = False
-        username = None
-    
-    
-    conn = dbi.connect()
-    posts = qf.get_posts_with_usernames(conn)
-    users = qf.get_all_users(conn)
-    states = qf.get_all_states(conn)
-    return render_template('main.html',title='Main Page', posts = posts, users=users, states=states, username=username, is_logged_in=is_logged_in)
-    
+        return render_template('login.html')
 
 @app.route('/logged_in/')
 def logged_in():
@@ -88,7 +90,9 @@ def logged_in():
 
 @app.route('/updateprofile/', methods =['GET', 'POST'])
 def update_user():
-    if 'CAS_USERNAME' in session:
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('login'))
+    else:
         their_username = session['CAS_USERNAME']
         conn = dbi.connect()
         if request.method == 'GET':
@@ -149,89 +153,107 @@ def after_logout():
 
 @app.route('/profile/<string:username>')
 def profile(username):
-    conn = dbi.connect()
-    user = qf.get_profile_info(conn, username)
-    pic = qf.getProfilePic(conn, username)
-    return render_template('profile.html', user = user, pic=pic)
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('login'))
+    else:
+        conn = dbi.connect()
+        user = qf.get_profile_info(conn, username)
+        pic = qf.getProfilePic(conn, username)
+        return render_template('profile.html', user = user, pic=pic)
 
 @app.route('/pic/<username>')
 def pic(username):
-    conn = dbi.connect()
-    curs = dbi.dict_cursor(conn)
-    numrows = curs.execute(
-        '''select filename from Picfile where username = %s''',
-        [username])
-    if numrows == 0:
-        flash('No picture for {}'.format(username))
-        return redirect(url_for('index'))
-    row = curs.fetchone()
-    return send_from_directory(app.config['UPLOADS'],row['filename'])
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('login'))
+    else:
+        conn = dbi.connect()
+        curs = dbi.dict_cursor(conn)
+        numrows = curs.execute(
+            '''select filename from Picfile where username = %s''',
+            [username])
+        if numrows == 0:
+            flash('No picture for {}'.format(username))
+            return redirect(url_for('index'))
+        row = curs.fetchone()
+        return send_from_directory(app.config['UPLOADS'],row['filename'])
 
 
 @app.route('/myprofile/')
 def myprofile():
-    if 'CAS_USERNAME' in session:
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('login'))
+    else:
         username = session['CAS_USERNAME']
-    return redirect( url_for('profile', username = username)) 
+        return redirect( url_for('profile', username = username)) 
 
+#need second backslash? 
 @app.route('/result')
 def result():
-    conn = dbi.connect()
-    destination = request.args.get('destination-name')
-    street_address = request.args.get('street-address')
-    city = request.args.get('city')
-    state = request.args.get('menu-state') # doesn't completely work yet
-    zipcode = request.args.get('zip') 
-    user = request.args.get('menu-user') # doesn't completely work yet
-    date = request.args.get('date')  # doesn't completely work yet 
-    time = request.args.get('time')  # doesn't completely work yet
-    seats = request.args.get('seats')
-    cost = request.args.get('cost')
-    users = qf.get_all_users(conn)
-    states = qf.get_all_states(conn)
-    posts = qf.get_result_posts(conn, destination, street_address, city, state, zipcode, user, date, time, seats, cost)
-    return render_template('main.html',title='Main Page', posts = posts, users = users, states=states)
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('login'))
+    else: 
+        conn = dbi.connect()
+        destination = request.args.get('destination-name')
+        street_address = request.args.get('street-address')
+        city = request.args.get('city')
+        state = request.args.get('menu-state') # doesn't completely work yet
+        zipcode = request.args.get('zip') 
+        user = request.args.get('menu-user') # doesn't completely work yet
+        date = request.args.get('date')  # doesn't completely work yet 
+        time = request.args.get('time')  # doesn't completely work yet
+        seats = request.args.get('seats')
+        cost = request.args.get('cost')
+        users = qf.get_all_users(conn)
+        states = qf.get_all_states(conn)
+        posts = qf.get_result_posts(conn, destination, street_address, city, state, zipcode, user, date, time, seats, cost)
+        return render_template('main.html',title='Main Page', posts = posts, users = users, states=states)
 
 @app.route('/myposts/', methods =['GET'])
 def showmy():
     '''My posts page has a nav bar and will eventually shows all posts in the database
     made by the logged in user but not yet implemented.'''
-    return render_template("myposts.html")
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('login'))
+    else:
+        return render_template("myposts.html")
 
 @app.route('/createpost/', methods =['GET', 'POST'])
 def insert():
     '''An insert post page with a form to do just that. Redirects to home page after submit.'''
-    #blank form 
-    if request.method == 'GET':
-        return render_template("insert.html")
-    #submit button was cliked
-    else: 
-        conn = dbi.connect()
-        #gettting infor from form
-        if 'CAS_USERNAME' in session:
-            username = session['CAS_USERNAME']
-        #username = request.form['post-username']
-        type = request.form['post-type']
-        date = request.form['post-date'].replace("-", "")
-        time = request.form['post-time']
-        title = request.form['post-title']
-        seats = request.form['post-seats']
-        special_request = request.form['post-specials']
-        #special_request is optional so set it to None if left blank
-        if special_request == "":
-            special_request = None
-        display_now = True
-        cost = request.form['post-cost']
-        destination = request.form['post-address-name']
-        street_address = request.form['post-address-street']
-        city = request.form['post-address-city']
-        state = request.form['post-address-state']
-        zipcode = request.form['post-address-zipcode']
-        #insert the post
-        cf.insertpost(conn, username, type, date, time, destination, street_address, city, state, zipcode, title, seats, special_request, display_now, cost)
-        return redirect( url_for('index') )
-        #eventually will do this and maybe flash something? 
-        #return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) 
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('login'))
+    else:
+        #blank form 
+        if request.method == 'GET':
+            return render_template("insert.html")
+        #submit button was cliked
+        else: 
+            conn = dbi.connect()
+            #gettting infor from form
+            if 'CAS_USERNAME' in session:
+                username = session['CAS_USERNAME']
+            #username = request.form['post-username']
+            type = request.form['post-type']
+            date = request.form['post-date'].replace("-", "")
+            time = request.form['post-time']
+            title = request.form['post-title']
+            seats = request.form['post-seats']
+            special_request = request.form['post-specials']
+            #special_request is optional so set it to None if left blank
+            if special_request == "":
+                special_request = None
+            display_now = True
+            cost = request.form['post-cost']
+            destination = request.form['post-address-name']
+            street_address = request.form['post-address-street']
+            city = request.form['post-address-city']
+            state = request.form['post-address-state']
+            zipcode = request.form['post-address-zipcode']
+            #insert the post
+            cf.insertpost(conn, username, type, date, time, destination, street_address, city, state, zipcode, title, seats, special_request, display_now, cost)
+            return redirect( url_for('index') )
+            #eventually will do this and maybe flash something? 
+            #return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) 
 
 
 @app.before_first_request

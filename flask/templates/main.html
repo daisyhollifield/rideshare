@@ -66,7 +66,6 @@
      
 </form>
 
-{% if is_logged_in %}
 
 {% for post in posts %}
 {% if post.type == "offering" %}
@@ -103,10 +102,5 @@
 </div>
 {% endfor %}
 
-{% else %}
-
-<p> <bold>Please log in to see posts.</bold> </p>
-
-{% endif %}
 
 {% endblock %}

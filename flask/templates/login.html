@@ -1,0 +1,33 @@
+<!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db. 
+    HTML file that implements the home page of the app
+    by extending Base HTML file
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+    {% extends "base.html" %}
+
+    {% block head_stuff %}
+    
+    <p>Please enter the correct info....</p>
+    <!-- Start of CAS STUFF-->
+            
+    {% if username %}
+    
+        <form method="GET" action="{{url_for('cas.logout')}}">
+          <button>logout {{username}}</button>
+        </form>
+    {% else %}
+    <form method="GET" action="{{url_for('cas.login')}}">
+     <button>login</button>
+    </form>
+    {% endif %}
+    
+    <!-- End of CAS STUFF-->
+    
+    
+    {% endblock %}
+    
+    {% block main_content %}
+    <h1>Please Log in to Continue</h1>
+   
+    {% endblock %}
+    
