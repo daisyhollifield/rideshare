@@ -52,7 +52,7 @@ def index():
     '''Home page has a nav bar and shows all posts in the database. Has front end for
     login in box and query spot but not yet implemented.'''
     if 'CAS_USERNAME' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('applogin'))
     else:
         is_logged_in = True
         username = session['CAS_USERNAME']
@@ -62,8 +62,8 @@ def index():
         states = qf.get_all_states(conn)
         return render_template('main.html',title='Main Page', posts = posts, users=users, states=states, username=username, is_logged_in=is_logged_in)
     
-@app.route('/login/')
-def login():
+@app.route('/applogin/')
+def applogin():
     if 'CAS_USERNAME' in session:
         return redirect( url_for('index') )
     else:
@@ -91,7 +91,7 @@ def logged_in():
 @app.route('/updateprofile/', methods =['GET', 'POST'])
 def update_user():
     if 'CAS_USERNAME' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('applogin'))
     else:
         their_username = session['CAS_USERNAME']
         conn = dbi.connect()
@@ -154,7 +154,7 @@ def after_logout():
 @app.route('/profile/<string:username>')
 def profile(username):
     if 'CAS_USERNAME' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('applogin'))
     else:
         conn = dbi.connect()
         user = qf.get_profile_info(conn, username)
@@ -164,7 +164,7 @@ def profile(username):
 @app.route('/pic/<username>')
 def pic(username):
     if 'CAS_USERNAME' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('applogin'))
     else:
         conn = dbi.connect()
         curs = dbi.dict_cursor(conn)
@@ -181,7 +181,7 @@ def pic(username):
 @app.route('/myprofile/')
 def myprofile():
     if 'CAS_USERNAME' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('applogin'))
     else:
         username = session['CAS_USERNAME']
         return redirect( url_for('profile', username = username)) 
@@ -190,7 +190,7 @@ def myprofile():
 @app.route('/result')
 def result():
     if 'CAS_USERNAME' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('applogin'))
     else: 
         conn = dbi.connect()
         destination = request.args.get('destination-name')
@@ -213,7 +213,7 @@ def showmy():
     '''My posts page has a nav bar and will eventually shows all posts in the database
     made by the logged in user but not yet implemented.'''
     if 'CAS_USERNAME' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('applogin'))
     else:
         return render_template("myposts.html")
 
@@ -221,7 +221,7 @@ def showmy():
 def insert():
     '''An insert post page with a form to do just that. Redirects to home page after submit.'''
     if 'CAS_USERNAME' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('applogin'))
     else:
         #blank form 
         if request.method == 'GET':
