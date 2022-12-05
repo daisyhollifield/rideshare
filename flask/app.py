@@ -136,13 +136,13 @@ def update_user():
             cf.updateUser(conn, username=their_username, phone_number=phone_number, class_year=class_year, major=major, hometown=hometown)
             #file stuff
             file = request.files['pic']
-            #add if statment checks if there was an upload or not?? - ask scott
             user_filename = file.filename
-            ext = user_filename.split('.')[-1]
-            filename = secure_filename('{}.{}'.format(their_username,ext))
-            pathname = os.path.join(app.config['UPLOADS'],filename)
-            file.save(pathname)
-            cf.updateProfilePic(conn, their_username, filename)
+            if user_filename != '':
+                ext = user_filename.split('.')[-1]
+                filename = secure_filename('{}.{}'.format(their_username,ext))
+                pathname = os.path.join(app.config['UPLOADS'],filename)
+                file.save(pathname)
+                cf.updateProfilePic(conn, their_username, filename)
             return redirect( url_for('profile', username = their_username))   
 
 
