@@ -15,7 +15,8 @@
     <h2>Hometown: {{ user.hometown }}</h2>
     </div>  
     <img src="{{url_for('pic',username=pic['username'])}}" width=auto height="300" alt="{{pic['username']}}">
-   
+    
+    <button type="button"><a href="{{url_for('update_user')}}">Update Profile here</a></button>
 
     
     

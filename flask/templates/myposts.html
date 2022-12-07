@@ -7,9 +7,40 @@
 
 {% block main_content %}
 <h1>My Posts!</h1>
+{% for post in posts %}
+{% if post.type == "offering" %}
+<div class ="post-block" id = "offering">
+{% else %}
+<div class ="post-block" id = "seeking">
+{% endif %}
+    <h3>{{post.title}}</h3> 
+    {% if post.type == "offering" %}
+    <div class="driver-info-block" id="driver-block">
+    {% else %}
+    <div class="rider-info-block" id="driver-block">
+    {% endif %}
+        <p>User: {{post.name}} (<a href = "{{ url_for( 'profile', username = post.username ) }}">{{post.username}}</href></a>)</p>
+        <p>Phone Number: {{post.phone_number}}</p>
+    </div>
+    {% if post.type == "offering" %}
+    <div class="driver-info-block" id="destination-block">
+    {% else %}
+    <div class="rider-info-block" id="destination-block">
+    {% endif %}
+        <p>{{post.destination}}, {{post.street_address}}, {{post.city}}, {{post.state}} {{post.zipcode}}</p>
+    </div>
+    {% if post.type == "offering" %}
+    <div class ="driver-info-block" id="ride-block">
+    {% else %}
+    <div class ="rider-info-block" id="ride-block">
+    {% endif %}
+    <p>Date: {{post.date.month}}/{{post.date.day}}/{{post.date.year}} Time: {{post.time}}</p>
+    <p>Seats: {{post.seats}}</p>
+    <p>Cost: ${{post.cost}}</p>
+    <p>Special Request: {{post.special_request}}</p>
+    </div>
+</div>
+{% endfor %}
 
-<p>Here are all of your posts:</p>
-
-<p> Not yet implemented. Eventually all posts made by this user will appear here. </p>
 
 {% endblock %}

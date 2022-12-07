@@ -61,7 +61,25 @@ def index():
         users = qf.get_all_users(conn)
         states = qf.get_all_states(conn)
         return render_template('main.html',title='Main Page', posts = posts, users=users, states=states, username=username, is_logged_in=is_logged_in)
-    
+
+@app.route('/myposts/')
+def my_posts():
+    '''myposts page shows all the posts that a user has created, including both requests and offers.'''
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('applogin'))
+    else:
+        is_logged_in = True
+        username = session['CAS_USERNAME']
+        conn = dbi.connect()
+        myPosts = []
+        posts = qf.get_posts_with_usernames(conn)
+        for post in posts:
+            if post['username'] == username:
+                myPosts.append(post)
+        users = qf.get_all_users(conn)
+        states = qf.get_all_states(conn)
+        return render_template('main.html',title='Main Page', posts = myPosts, users=users, states=states, username=username, is_logged_in=is_logged_in)
+
 @app.route('/applogin/')
 def applogin():
     if 'CAS_USERNAME' in session:
