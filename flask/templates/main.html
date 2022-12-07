@@ -70,10 +70,11 @@
 {% for post in posts %}
 {% if post.type == "offering" %}
 <div class ="post-block" id = "offering">
+  <h3>Offering: {{post.title}}</h3> 
 {% else %}
 <div class ="post-block" id = "seeking">
+  <h3>Looking for: {{post.title}}</h3> 
 {% endif %}
-    <h3>{{post.title}}</h3> 
     {% if post.type == "offering" %}
     <div class="driver-info-block" id="driver-block">
     {% else %}
