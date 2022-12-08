@@ -8,6 +8,8 @@
 {% block main_content %}
 <h1>My Posts!</h1>
 {% for post in posts %}
+
+<form action="{{url_for('my_posts')}}" method="post">
 {% if post.type == "offering" %}
 <div class ="post-block" id = "offering">
 {% else %}
@@ -21,6 +23,7 @@
     {% endif %}
         <p>User: {{post.name}} (<a href = "{{ url_for( 'profile', username = post.username ) }}">{{post.username}}</href></a>)</p>
         <p>Phone Number: {{post.phone_number}}</p>
+        
     </div>
     {% if post.type == "offering" %}
     <div class="driver-info-block" id="destination-block">
@@ -38,6 +41,9 @@
     <p>Seats: {{post.seats}}</p>
     <p>Cost: ${{post.cost}}</p>
     <p>Special Request: {{post.special_request}}</p>
+
+    <p><button name="pid" type="submit" value={{post.pid}}>Delete Post</button>  </p>
+    </form>
     </div>
 </div>
 {% endfor %}

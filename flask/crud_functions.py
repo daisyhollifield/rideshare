@@ -35,3 +35,8 @@ def updateProfilePic(conn, their_username, filename):
                    on duplicate key update filename = %s''',
                 [their_username, filename, filename])
     conn.commit()
+
+def deactivatePost(conn, pid):
+    curs = dbi.dict_cursor(conn)
+    curs.execute('update Post set display_now = False where pid = %s', [pid])
+    conn.commit()
