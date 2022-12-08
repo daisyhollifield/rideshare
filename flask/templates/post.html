@@ -1,0 +1,60 @@
+<!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db. 
+    HTML file that implements the ??? page of the app
+    by extending Base HTML file
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+    {% extends "base.html" %}
+
+    {% block main_content %}
+    <div>
+    <h1>{{ post.title }}</h1>
+    {% if post.type=='looking for' %}
+    <h2>Person Looking For a Ride: {{ poster.name }}</h2>  
+    {% else %}
+    <h2>Driver: {{ poster.name }}</h2>  
+    {% endif %}
+    <h2>Their Contact Info: {{ poster.phone_number }}</h2>  
+
+    <h2>Destination: {{ post.destination }}</h2>
+    <h2>Address: {{ post.street_address }} {{ post.city }}, {{post.state}} {{post.zipcode}}</h2>
+    <h2>Date: {{ post.date }} </h2>
+    <h2>Time: {{ post.time }}</h2>
+
+    {% if post.type=='looking for' %}
+    <h2>Seats Needed: {{ post.seats }}</h2> 
+    {% else %}
+    <h2>Seats Available: {{ post.seats }}</h2>  
+    {% endif %} 
+
+    {% if post.type=='looking for' %}
+    <h2>Amount Willing to Pay: {{ post.cost }}</h2> 
+    {% else %}
+    <h2>Charging: {{ post.cost}}</h2>  
+    {% endif %} 
+
+    <h2>Special_Request: {{ post.special_request }}</h2>
+
+    <p>Comments:</p>
+    {% for comment in comments %}
+    <p>{{comment.username}} said "{{comment.content}}" at {{comment.time}}.</p>
+    </div>
+    </div>
+    {% endfor %}
+
+
+
+
+
+
+
+
+    <form action="{{url_for('post', post_id = post.pid)}}" method="post">
+
+    <p><label for="comment">Add a comment:</label></p>
+    <p><textarea id="comment" name="new_comment" rows=3 cols=60></textarea></p>
+
+    <p><input type="submit" value="Add comment!">
+    </form>
+
+    {% endblock %}
+    

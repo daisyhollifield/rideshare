@@ -137,6 +137,13 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + display_now_string + ' order by date, time;', args_lst)
     return curs.fetchall()
 
+
+def get_post_comments(conn, pid):
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from Comment where pid = %s;', [pid])
+    return curs.fetchall()
+
+
 def userExists (conn, username):
     curs = dbi.dict_cursor(conn)
     curs.execute('select * from User where username = %s;', [username])
@@ -148,4 +155,11 @@ def getProfilePic(conn, username):
     curs.execute(
         '''select * from Picfile where username = %s''',
         [username])
+    return curs.fetchone()
+
+def get_post_info(conn, post_id):
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+        '''select * from Post where pid = %s''',
+        [post_id])
     return curs.fetchone()

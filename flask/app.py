@@ -6,6 +6,8 @@ Fall 2022
 from flask import (Flask, render_template, make_response, url_for, request,
                    redirect, flash, session, send_from_directory, jsonify)
 from werkzeug.utils import secure_filename
+
+from datetime import datetime
 app = Flask(__name__)
 
 # one or the other of these. Defaults to MySQL (PyMySQL)
@@ -174,10 +176,11 @@ def profile(username):
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
+        their_username = session['CAS_USERNAME']
         conn = dbi.connect()
         user = qf.get_profile_info(conn, username)
         pic = qf.getProfilePic(conn, username)
-        return render_template('profile.html', user = user, pic=pic)
+        return render_template('profile.html', user = user, pic=pic, username=their_username)
 
 @app.route('/pic/<username>')
 def pic(username):
@@ -203,6 +206,29 @@ def myprofile():
     else:
         username = session['CAS_USERNAME']
         return redirect( url_for('profile', username = username)) 
+
+@app.route('/post/<post_id>', methods =['GET', 'POST'])
+def post(post_id):
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('applogin'))
+    else:
+        conn = dbi.connect()
+        their_username=session['CAS_USERNAME']
+        if request.method == 'GET':
+            post=qf.get_post_info(conn, post_id)
+            if post['display_now'] == False: 
+                #flash something
+                return redirect( url_for('index') )
+            poster = qf.get_profile_info(conn, post['username'])
+            comments = qf.get_post_comments(conn, post['pid'])
+            print('AHHHHHHH')
+            print(comments)
+            return render_template('post.html', post = post, poster=poster,username=their_username, comments=comments)
+        else:
+            time = datetime.now()
+            content = request.form['new_comment']
+            cf.addComment(conn, their_username, post_id, content, time)
+            return redirect( url_for('post', post_id = post_id)) 
 
 #need second backslash? 
 @app.route('/result')
@@ -241,16 +267,14 @@ def insert():
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
+        username = session['CAS_USERNAME']
         #blank form 
         if request.method == 'GET':
-            return render_template("insert.html")
+            return render_template("insert.html", username=username)
         #submit button was cliked
         else: 
             conn = dbi.connect()
             #gettting infor from form
-            if 'CAS_USERNAME' in session:
-                username = session['CAS_USERNAME']
-            #username = request.form['post-username']
             type = request.form['post-type']
             date = request.form['post-date'].replace("-", "")
             time = request.form['post-time']
@@ -269,9 +293,8 @@ def insert():
             zipcode = request.form['post-address-zipcode']
             #insert the post
             cf.insertpost(conn, username, type, date, time, destination, street_address, city, state, zipcode, title, seats, special_request, display_now, cost)
-            return redirect( url_for('index') )
-            #eventually will do this and maybe flash something? 
-            #return redirect(url_for('MYPOSTS', nnn=request.form['movie-tt'])) 
+            return redirect( url_for('showmy') )
+            #eventuallymaybe flash something? 
 
 
 @app.before_first_request

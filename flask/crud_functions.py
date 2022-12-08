@@ -35,3 +35,10 @@ def updateProfilePic(conn, their_username, filename):
                    on duplicate key update filename = %s''',
                 [their_username, filename, filename])
     conn.commit()
+
+def addComment(conn, username, pid, content, time):
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+                'insert into Comment(username,pid, content, time) values (%s,%s,%s,%s)',
+                [username, pid, content, time])
+    conn.commit()

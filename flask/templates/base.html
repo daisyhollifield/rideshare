@@ -26,6 +26,21 @@
 </div>
 {% endif %}
 {% endwith %}
+
+<!-- Start of CAS login/out button-->
+        
+{% if username %}
+
+    <form method="GET" action="{{url_for('cas.logout')}}">
+      <button>logout {{username}}</button>
+    </form>
+{% else %}
+<form method="GET" action="{{url_for('cas.login')}}">
+ <button>login</button>
+</form>
+{% endif %}
+
+<!-- End of CAS login/logout button-->
   
 <!-- Navigation bar  Block Begins-->
 {% block nav %}

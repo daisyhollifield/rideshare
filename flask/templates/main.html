@@ -5,25 +5,6 @@
     Fall 2022 -->
 {% extends "base.html" %}
 
-{% block head_stuff %}
-
-<!-- Start of CAS STUFF-->
-        
-{% if username %}
-
-    <form method="GET" action="{{url_for('cas.logout')}}">
-      <button>logout {{username}}</button>
-    </form>
-{% else %}
-<form method="GET" action="{{url_for('cas.login')}}">
- <button>login</button>
-</form>
-{% endif %}
-
-<!-- End of CAS STUFF-->
-
-
-{% endblock %}
 
 {% block main_content %}
 <h1>Wellesley College Rideshare</h1>
@@ -70,10 +51,10 @@
 {% for post in posts %}
 {% if post.type == "offering" %}
 <div class ="post-block" id = "offering">
-  <h3>Offering: {{post.title}}</h3> 
+  <h3>Offering: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</href></a>) </h3> 
 {% else %}
 <div class ="post-block" id = "seeking">
-  <h3>Looking for: {{post.title}}</h3> 
+  <h3>Looking for: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</href></a>) </h3> 
 {% endif %}
     {% if post.type == "offering" %}
     <div class="driver-info-block" id="driver-block">
