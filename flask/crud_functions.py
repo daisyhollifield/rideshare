@@ -36,6 +36,11 @@ def updateProfilePic(conn, their_username, filename):
                 [their_username, filename, filename])
     conn.commit()
 
+def deactivatePost(conn, pid):
+    curs = dbi.dict_cursor(conn)
+    curs.execute('update Post set display_now = False where pid = %s', [pid])
+    conn.commit()
+
 def addComment(conn, username, pid, content, time):
     curs = dbi.dict_cursor(conn)
     curs.execute(
