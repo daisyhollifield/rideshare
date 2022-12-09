@@ -85,6 +85,7 @@ def my_posts():
         else:
             pid = request.form['pid']
             cf.deactivatePost(conn, pid)
+            #valerie this needs to be changed to a redirect (try deleting something and see how the post doesn't get deleted from myposts unless you refresh page)
             return render_template('myposts.html',title='Main Page', posts = myPosts, users=users, states=states, username=username, is_logged_in=is_logged_in)
 
 @app.route('/applogin/')

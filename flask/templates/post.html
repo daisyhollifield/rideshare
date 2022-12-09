@@ -8,43 +8,42 @@
     {% block main_content %}
     <div>
     <h1>{{ post.title }}</h1>
+    <h2>Who?: </h2>
     {% if post.type=='looking for' %}
-    <h2>Person Looking For a Ride: {{ poster.name }}</h2>  
+    <h3>Person Looking For a Ride: {{ poster.name }}</h3>  
     {% else %}
-    <h2>Driver: {{ poster.name }}</h2>  
+    <h3>Driver: {{ poster.name }}</h3>  
     {% endif %}
-    <h2>Their Contact Info: {{ poster.phone_number }}</h2>  
+    <h3>Their Contact Info: {{ poster.phone_number }}</h3>  
 
-    <h2>Destination: {{ post.destination }}</h2>
-    <h2>Address: {{ post.street_address }} {{ post.city }}, {{post.state}} {{post.zipcode}}</h2>
-    <h2>Date: {{ post.date }} </h2>
-    <h2>Time: {{ post.time }}</h2>
+    <h2>Where? </h2>
+    <h3>Destination: {{ post.destination }}</h3>
+    <h3>Address: {{ post.street_address }} {{ post.city }}, {{post.state}} {{post.zipcode}}</h3>
+    <h3>Date: {{ post.date }} </h3>
+    <h3>Time: {{ post.time }}</h3>
 
+    <h2>Extra Info? </h2>
     {% if post.type=='looking for' %}
-    <h2>Seats Needed: {{ post.seats }}</h2> 
+    <h3>Seats Needed: {{ post.seats }}</h3> 
     {% else %}
-    <h2>Seats Available: {{ post.seats }}</h2>  
+    <h3>Seats Available: {{ post.seats }}</h3>  
     {% endif %} 
 
     {% if post.type=='looking for' %}
-    <h2>Amount Willing to Pay: {{ post.cost }}</h2> 
+    <h3>Amount Willing to Pay: {{ post.cost }}</h3> 
     {% else %}
-    <h2>Charging: {{ post.cost}}</h2>  
+    <h3>Charging: {{ post.cost}}</h3>  
     {% endif %} 
 
-    <h2>Special_Request: {{ post.special_request }}</h2>
-
-    <p>Comments:</p>
+    <h3>Special_Request: {{ post.special_request }}</h3>
+    
+    
+    <h2>Comments:</h2>
     {% for comment in comments %}
-    <p>{{comment.username}} said "{{comment.content}}" at {{comment.time}}.</p>
+    <h5>{{comment.username}} said "{{comment.content}}" at {{comment.time}}.</h5>
     </div>
     </div>
     {% endfor %}
-
-
-
-
-
 
 
 

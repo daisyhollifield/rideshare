@@ -85,10 +85,13 @@ h1 {
     color: var(--color-header);
 }
 
-h2, h3 {
+h2 {
+    color: rgb(85, 161, 85);
+}
+   
+h3 {
     color: var(--color-header);
 }
-    
 
 /* for a simple navbar. Talk to Scott if you want drop-downs. */
 nav > ul {
