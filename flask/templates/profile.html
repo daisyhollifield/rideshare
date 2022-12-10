@@ -19,7 +19,9 @@
     <br> 
     </div>  
     <div>
+    {% if user.username==username %}
     <button type="button"><a href="{{url_for('update_user')}}">Update Profile here</a></button>
+    {% endif %} 
     </div>
     
     
