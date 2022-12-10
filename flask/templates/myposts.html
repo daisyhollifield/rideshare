@@ -27,8 +27,10 @@
     </div>
     {% if post.type == "offering" %}
     <div class="driver-info-block" id="destination-block">
+        <h3>Offering: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</href></a>) </h3> 
     {% else %}
     <div class="rider-info-block" id="destination-block">
+        <h3>Looking for: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</href></a>) </h3> 
     {% endif %}
         <p>{{post.destination}}, {{post.street_address}}, {{post.city}}, {{post.state}} {{post.zipcode}}</p>
     </div>
