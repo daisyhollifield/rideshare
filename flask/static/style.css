@@ -148,3 +148,16 @@ nav button:hover, button:focus, nav a:hover, nav a:focus {
     background-color: var(--color-focus);
 }
 
+.profile-page{
+    background-color: #c2f6bb;
+    line-height: 15px;
+    padding: 5px;
+    margin: 10px;
+}
+
+.profile-pic{
+    padding: 10px;
+    margin: 10px;
+    display: inline-block;
+}
+

@@ -6,7 +6,7 @@
     {% extends "base.html" %}
 
     {% block main_content %}
-    <div>
+    <div class = "profile-page">
     <h1>{{ user.name }}</h1>
     <h2>Username: {{ user.username }}</h2>
     <h2>Phone Number: {{ user.phone_number }}</h2>
@@ -14,10 +14,13 @@
     <h2>Major: {{ user.major }}</h2>
     <h2>Hometown: {{ user.hometown }}</h2>
     </div>  
+    <div class = "profile-pic">
     <img src="{{url_for('pic',username=pic['username'])}}" width=auto height="300" alt="{{pic['username']}}">
     <br> 
+    </div>  
+    <div>
     <button type="button"><a href="{{url_for('update_user')}}">Update Profile here</a></button>
-
+    </div>
     
     
     {% endblock %}

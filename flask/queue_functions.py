@@ -27,7 +27,7 @@ def get_all_users(conn):
 
 def get_all_states(conn):
     curs = dbi.dict_cursor(conn)
-    curs.execute('select `state` from Post')
+    curs.execute('select `state` from Post where display_now = True')
     all_states = curs.fetchall()
     states = []
     for s in all_states:
