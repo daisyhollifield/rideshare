@@ -1,10 +1,7 @@
 import cs304dbi as dbi
 
-
 # ==========================================================
 # The functions that do most of the queue and display of posting work.
-
-
 
 dbi.conf('rideshare_db')
 
@@ -21,11 +18,14 @@ def get_profile_info(conn, username):
     return curs.fetchone()
     
 def get_all_users(conn):
+    """ returns a dictionary containing all of the users and their info in the User table  """
     curs = dbi.dict_cursor(conn)
     curs.execute('select * from User order by username')
     return curs.fetchall()
 
 def get_all_states(conn):
+    """ returns a list containing all of the states with no repeats in the Post table where their display
+    attribute is true """
     curs = dbi.dict_cursor(conn)
     curs.execute('select `state` from Post where display_now = True')
     all_states = curs.fetchall()
@@ -37,6 +37,7 @@ def get_all_states(conn):
     return sorted(states)
 
 def get_result_posts(conn, destination, street_address, city, state, zipcode, user, date, time, seats, cost):
+    """ returns a dictionary of posts that match the given inputed criteria """
     args_lst = []
     curs = dbi.dict_cursor(conn)
     if destination == "":
@@ -139,18 +140,22 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
 
 
 def get_post_comments(conn, pid):
+    """ returns a dictionary of all the comments for a given post """
     curs = dbi.dict_cursor(conn)
     curs.execute('select * from Comment where pid = %s;', [pid])
     return curs.fetchall()
 
 
 def userExists (conn, username):
+    """ returns a boolean to see whether the user exists in the User table """
     curs = dbi.dict_cursor(conn)
     curs.execute('select * from User where username = %s;', [username])
     return (curs.fetchone() != None)
 
 
 def getProfilePic(conn, username):   
+    """ returns a dictionary containing the information in the Picfile table for 
+    a given username """
     curs = dbi.dict_cursor(conn)
     curs.execute(
         '''select * from Picfile where username = %s''',
@@ -158,6 +163,8 @@ def getProfilePic(conn, username):
     return curs.fetchone()
 
 def get_post_info(conn, post_id):
+    """ returns a dictionary containing the information in the Post table for 
+    a given post """
     curs = dbi.dict_cursor(conn)
     curs.execute(
         '''select * from Post where pid = %s''',

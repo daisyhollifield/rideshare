@@ -227,8 +227,6 @@ def post(post_id):
                 return redirect( url_for('index') )
             poster = qf.get_profile_info(conn, post['username'])
             comments = qf.get_post_comments(conn, post['pid'])
-            print('AHHHHHHH')
-            print(comments)
             return render_template('post.html', post = post, poster=poster,username=their_username, comments=comments)
         else:
             time = datetime.now()
@@ -237,7 +235,7 @@ def post(post_id):
             return redirect( url_for('post', post_id = post_id)) 
 
 #need second backslash? 
-@app.route('/result')
+@app.route('/result/')
 def result():
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
