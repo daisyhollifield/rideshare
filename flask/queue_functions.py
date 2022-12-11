@@ -3,12 +3,11 @@ import cs304dbi as dbi
 # ==========================================================
 # The functions that do most of the queue and display of posting work.
 
-dbi.conf('rideshare_db')
-
 def get_posts_with_usernames(conn):
     """ gets info about all posts and corresponding usernames """
     curs = dbi.dict_cursor(conn)
-    curs.execute('select * from Post inner join User using (username) where display_now = True order by date, time;')
+    curs.execute('''select * from Post inner join User using (username)
+     where display_now = True order by date, time;''')
     return curs.fetchall()
 
 def get_profile_info(conn, username):
@@ -18,14 +17,15 @@ def get_profile_info(conn, username):
     return curs.fetchone()
     
 def get_all_users(conn):
-    """ returns a dictionary containing all of the users and their info in the User table  """
+    """ returns a dictionary containing all of the users and their info 
+    in the User table  """
     curs = dbi.dict_cursor(conn)
     curs.execute('select * from User order by username')
     return curs.fetchall()
 
 def get_all_states(conn):
-    """ returns a list containing all of the states with no repeats in the Post table where their display
-    attribute is true """
+    """ returns a list containing all of the states with no repeats in the Post table where
+    their display attribute is true """
     curs = dbi.dict_cursor(conn)
     curs.execute('select `state` from Post where display_now = True')
     all_states = curs.fetchall()
@@ -36,7 +36,8 @@ def get_all_states(conn):
             states.append(s_name)
     return sorted(states)
 
-def get_result_posts(conn, destination, street_address, city, state, zipcode, user, date, time, seats, cost):
+def get_result_posts(conn, destination, street_address, city, state, zipcode, 
+user, date, time, seats, cost):
     """ returns a dictionary of posts that match the given inputed criteria """
     args_lst = []
     curs = dbi.dict_cursor(conn)
@@ -77,7 +78,8 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     if zipcode == "":
         zipcode_string = ""
     else:
-        if destination_string == "" and street_address_string == "" and city_string == "" and state_string == "":
+        if (destination_string == "" and street_address_string == "" and city_string == "" 
+        and state_string == ""):
             zipcode_string = 'where zipcode = %s'
             args_lst.append(zipcode)
         else:
@@ -86,7 +88,8 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     if user == "none":
         user_string = ''
     else:
-        if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "":
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == ""):
             user_string = 'where username = %s'
             args_lst.append(user)
         else:
@@ -96,7 +99,8 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     if date == "":
         date_string = ""
     else:
-        if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "" and user_string == "":
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == "" and user_string == ""):
             date_string = 'where date = %s'
             args_lst.append(date)
         else:
@@ -106,7 +110,8 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     if time == "":
         time_string = ""
     else:
-        if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "" and user_string == "" and date_string == "":
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == "" and user_string == "" and date_string == ""):
             time_string = 'where time = %s'
             args_lst.append(time)
         else:
@@ -115,7 +120,9 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     if seats == '':
         seats_string = ''
     else:
-        if destination_string == '' and street_address_string == "" and city_string == "" and state_string == "" and zipcode_string == "" and user_string == '' and date_string == '' and time_string == '':
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == "" and user_string == ''
+         and date_string == '' and time_string == ''):
             seats_string = 'where seats = %s'
             args_lst.append(seats)
         else:
@@ -125,17 +132,24 @@ def get_result_posts(conn, destination, street_address, city, state, zipcode, us
     if cost == '':
         cost_string = ''
     else:
-        if destination_string == '' and street_address_string == "" and city_string== "" and state_string == "" and zipcode_string == "" and user_string == '' and date_string == "" and time_string == '' and seats_string == '':
+        if (destination_string == '' and street_address_string == "" and city_string== "" 
+        and state_string == "" and zipcode_string == "" and user_string == '' and 
+        date_string == "" and time_string == '' and seats_string == ''):
             cost_string = 'where cost = %s'
             args_lst.append(cost)
         else:
             cost_string = ' and cost = %s'
             args_lst.append(cost)
-    if destination_string == '' and street_address_string == "" and city_string== "" and state_string == "" and zipcode_string == "" and user_string == '' and date_string == "" and time_string == '' and seats_string == '' and cost_string == '':
+    if (destination_string == '' and street_address_string == "" and city_string== "" 
+    and state_string == "" and zipcode_string == "" and user_string == '' 
+    and date_string == "" and time_string == '' and seats_string == '' and cost_string == ''):
         display_now_string = 'where display_now = True'
     else:
         display_now_string = ' and display_now = True'
-    curs.execute('select * from Post inner join User using (username) ' + destination_string + street_address_string + city_string + state_string + zipcode_string + user_string + date_string + time_string + seats_string + cost_string + display_now_string + ' order by date, time;', args_lst)
+    curs.execute('select * from Post inner join User using (username) ' 
+    + destination_string + street_address_string + city_string + state_string + 
+    zipcode_string + user_string + date_string + time_string + seats_string + 
+    cost_string + display_now_string + ' order by date, time;', args_lst)
     return curs.fetchall()
 
 

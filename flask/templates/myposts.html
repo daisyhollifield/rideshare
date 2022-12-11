@@ -10,47 +10,42 @@
 {% for post in posts %}
 
 <form action="{{url_for('my_posts')}}" method="post">
-{% if post.type == "offering" %}
-<div class ="post-block" id = "offering">
-{% else %}
-<div class ="post-block" id = "seeking">
-{% endif %}
-    <h3>{{post.title}}</h3> 
     {% if post.type == "offering" %}
-    <div class="driver-info-block" id="driver-block">
+    <div class = "offering-post post-block">
+      <h3>Offering: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</a>) </h3> 
     {% else %}
-    <div class="rider-info-block" id="driver-block">
+    <div class = "looking-for-post post-block">
+      <h3>Looking for: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</a>) </h3> 
     {% endif %}
-        <p>User: {{post.name}} (<a href = "{{ url_for( 'profile', username = post.username ) }}">{{post.username}}</href></a>)</p>
-        <p>Phone Number: {{post.phone_number}}</p>
-        
-    </div>
-    {% if post.type == "offering" %}
-    <div class="driver-info-block" id="destination-block">
-        <h3>Offering: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</href></a>) </h3> 
-    {% else %}
-    <div class="rider-info-block" id="destination-block">
-        <h3>Looking for: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</href></a>) </h3> 
-    {% endif %}
-        <p>{{post.destination}}, {{post.street_address}}, {{post.city}}, {{post.state}} {{post.zipcode}}</p>
-    </div>
-    {% if post.type == "offering" %}
-    <div class ="driver-info-block" id="ride-block">
-    {% else %}
-    <div class ="rider-info-block" id="ride-block">
-    {% endif %}
-    <p>Date: {{post.date.month}}/{{post.date.day}}/{{post.date.year}} Time: {{post.time}}</p>
-    <p>Seats: {{post.seats}}</p>
-    <p>Cost: ${{post.cost}}</p>
-    <p>Special Request: {{post.special_request}}</p>
-
+        {% if post.type == "offering" %}
+        <div class = "offering-info">
+        {% else %}
+        <div class = "seeking-info">
+        {% endif %}
+            <p>User: {{post.name}} (<a href = "{{ url_for( 'profile', username = post.username ) }}">{{post.username}}</a>)</p>
+            <p>Phone Number: {{post.phone_number}}</p>
+        </div>
+        {% if post.type == "offering" %}
+        <div class = "offering-info">
+        {% else %}
+        <div class = "seeking-info">
+        {% endif %}
+            <p>{{post.destination}}, {{post.street_address}}, {{post.city}}, {{post.state}} {{post.zipcode}}</p>
+        </div>
+        {% if post.type == "offering" %}
+        <div class = "offering-info">
+        {% else %}
+        <div class = "seeking-info">
+        {% endif %}
+        <p>Date: {{post.date.month}}/{{post.date.day}}/{{post.date.year}} Time: {{post.time}}</p>
+        <p>Seats: {{post.seats}}</p>
+        <p>Cost: ${{post.cost}}</p>
+        <p>Special Request: {{post.special_request}}</p>
+    </div></div>
     <p><button name="pid" type="submit" value={{post.pid}}>Delete Post</button>  </p>
     </form>
-    </div>
-</div>
+    
+
 {% endfor %}
-
-
-
 
 {% endblock %}

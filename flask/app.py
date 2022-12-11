@@ -41,7 +41,7 @@ app.config['CAS_LOGIN_ROUTE'] = '/module.php/casserver/cas.php/login'
 app.config['CAS_LOGOUT_ROUTE'] = '/module.php/casserver/cas.php/logout'
 app.config['CAS_VALIDATE_ROUTE'] = '/module.php/casserver/serviceValidate.php'
 app.config['CAS_AFTER_LOGIN'] = 'logged_in'
-# the following doesn't work :-(
+# the following doesn't work yet :-(
 app.config['CAS_AFTER_LOGOUT'] = 'after_logout'
 
 
@@ -51,8 +51,8 @@ app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
 
 @app.route('/')
 def index():
-    '''Home page has a nav bar and shows all posts in the database. Has front end for
-    login in box and query spot but not yet implemented.'''
+    '''Home page has a nav bar and shows all posts in the database. Redirects
+    to applogin page if the user is not logged in.'''
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
@@ -62,11 +62,14 @@ def index():
         posts = qf.get_posts_with_usernames(conn)
         users = qf.get_all_users(conn)
         states = qf.get_all_states(conn)
-        return render_template('main.html',title='Main Page', posts = posts, users=users, states=states, username=username, is_logged_in=is_logged_in)
+        return render_template('main.html',page_title='Wellesley College Rideshare',
+         posts = posts, users=users, states=states, username=username,
+         is_logged_in=is_logged_in)
 
 @app.route('/myposts/', methods =['GET', 'POST'])
 def my_posts():
-    '''myposts page shows all the posts that a user has created, including both requests and offers.'''
+    '''myposts page shows all the posts that a user has created, 
+    including both requests and offers.'''
     if 'CAS_USERNAME' not in session:
             return redirect(url_for('applogin'))
     else:
@@ -81,11 +84,11 @@ def my_posts():
         users = qf.get_all_users(conn)
         states = qf.get_all_states(conn)
         if request.method == 'GET':
-            return render_template('myposts.html',title='Main Page', posts = myPosts, users=users, states=states, username=username, is_logged_in=is_logged_in)
+            return render_template('myposts.html',page_title='My Posts', posts = myPosts, 
+            users=users, states=states, username=username, is_logged_in=is_logged_in)
         else:
             pid = request.form['pid']
             cf.deactivatePost(conn, pid)
-            #valerie this needs to be changed to a redirect (try deleting something and see how the post doesn't get deleted from myposts unless you refresh page)
             return redirect(url_for('my_posts'))
 
 @app.route('/applogin/')
@@ -93,7 +96,7 @@ def applogin():
     if 'CAS_USERNAME' in session:
         return redirect( url_for('index') )
     else:
-        return render_template('login.html')
+        return render_template('login.html', page_title='Login Page')
 
 @app.route('/logged_in/')
 def logged_in():
@@ -123,14 +126,15 @@ def update_user():
         conn = dbi.connect()
         if request.method == 'GET':
             #blank complete profile form 
-            #show them their current info!!!
             this_profile = qf.get_profile_info(conn, their_username)
             current_pn=this_profile['phone_number']
             current_cy=this_profile['class_year']
             current_mj=this_profile['major']
             current_ht=this_profile['hometown']
             current_pic = qf.getProfilePic(conn, their_username)
-            return render_template("updateProfile.html", pic=current_pic, username = their_username, current_pn=current_pn, current_cy=current_cy, current_mj=current_mj, current_ht=current_ht)
+            return render_template("updateProfile.html", page_title='Update Profile', pic=current_pic, 
+            username = their_username, current_pn=current_pn, current_cy=current_cy, 
+            current_mj=current_mj, current_ht=current_ht)
         else: 
             #pre form info: 
             this_profile = qf.get_profile_info(conn, their_username)
@@ -159,8 +163,8 @@ def update_user():
             ht_empty = (hometown == "")
             if ht_empty: 
                 hometown = current_ht
-            cf.updateUser(conn, username=their_username, phone_number=phone_number, class_year=class_year, major=major, hometown=hometown)
-            #file stuff
+            cf.updateUser(conn, username=their_username, phone_number=phone_number, 
+            class_year=class_year, major=major, hometown=hometown)
             file = request.files['pic']
             user_filename = file.filename
             if user_filename != '':
@@ -174,11 +178,13 @@ def update_user():
 
 @app.route('/after_logout/')
 def after_logout():
+    '''redircts the user to the home page once they logout'''
     return redirect( url_for('index') )
 
 
 @app.route('/profile/<string:username>')
 def profile(username):
+    '''displays a users profile'''
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
@@ -186,10 +192,11 @@ def profile(username):
         conn = dbi.connect()
         user = qf.get_profile_info(conn, username)
         pic = qf.getProfilePic(conn, username)
-        return render_template('profile.html', user = user, pic=pic, username=their_username)
+        return render_template('profile.html', page_title= username, user = user, pic=pic, username=their_username)
 
 @app.route('/pic/<username>')
 def pic(username):
+    ''' displays a user's inputed picture if they have uploaded a picture '''
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
@@ -207,6 +214,7 @@ def pic(username):
 
 @app.route('/myprofile/')
 def myprofile():
+    ''' displays the profile of the user from the session '''
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
@@ -215,6 +223,8 @@ def myprofile():
 
 @app.route('/post/<post_id>', methods =['GET', 'POST'])
 def post(post_id):
+    ''' displays the information of the singular post 
+    along with its comments '''
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
@@ -227,16 +237,19 @@ def post(post_id):
                 return redirect( url_for('index') )
             poster = qf.get_profile_info(conn, post['username'])
             comments = qf.get_post_comments(conn, post['pid'])
-            return render_template('post.html', post = post, poster=poster,username=their_username, comments=comments)
+            return render_template('post.html', page_title="Post " + str(post['pid']), post = post, poster=poster,
+            username=their_username, comments=comments)
         else:
             time = datetime.now()
             content = request.form['new_comment']
             cf.addComment(conn, their_username, post_id, content, time)
             return redirect( url_for('post', post_id = post_id)) 
 
-#need second backslash? 
 @app.route('/result/')
 def result():
+    ''' takes the input of the filter form and returns the home page
+    with the corresponding posts that match the information specified
+    in the filter'''
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else: 
@@ -244,17 +257,19 @@ def result():
         destination = request.args.get('destination-name')
         street_address = request.args.get('street-address')
         city = request.args.get('city')
-        state = request.args.get('menu-state') # doesn't completely work yet
+        state = request.args.get('menu-state') 
         zipcode = request.args.get('zip') 
-        user = request.args.get('menu-user') # doesn't completely work yet
-        date = request.args.get('date')  # doesn't completely work yet 
-        time = request.args.get('time')  # doesn't completely work yet
+        user = request.args.get('menu-user') 
+        date = request.args.get('date')  
+        time = request.args.get('time')  
         seats = request.args.get('seats')
         cost = request.args.get('cost')
         users = qf.get_all_users(conn)
         states = qf.get_all_states(conn)
-        posts = qf.get_result_posts(conn, destination, street_address, city, state, zipcode, user, date, time, seats, cost)
-        return render_template('main.html',title='Main Page', posts = posts, users = users, states=states)
+        posts = qf.get_result_posts(conn, destination, street_address, city, state, zipcode, 
+        user, date, time, seats, cost)
+        return render_template('main.html',page_title='Wellesley Ride Share Results', posts = posts,
+        users = users, states=states)
 
 @app.route('/myposts/', methods =['GET'])
 def showmy():
@@ -263,7 +278,7 @@ def showmy():
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
-        return render_template("myposts.html")
+        return render_template("myposts.html", page_title = "My Posts")
 
 @app.route('/createpost/', methods =['GET', 'POST'])
 def insert():
@@ -274,11 +289,11 @@ def insert():
         username = session['CAS_USERNAME']
         #blank form 
         if request.method == 'GET':
-            return render_template("insert.html", username=username)
-        #submit button was cliked
+            return render_template("insert.html", username=username, page_title = "Create Post")
+        #submit button was clicked
         else: 
             conn = dbi.connect()
-            #gettting infor from form
+            #gettting info from form
             type = request.form['post-type']
             date = request.form['post-date'].replace("-", "")
             time = request.form['post-time']
@@ -296,9 +311,9 @@ def insert():
             state = request.form['post-address-state']
             zipcode = request.form['post-address-zipcode']
             #insert the post
-            cf.insertpost(conn, username, type, date, time, destination, street_address, city, state, zipcode, title, seats, special_request, display_now, cost)
+            cf.insertpost(conn, username, type, date, time, destination, street_address, 
+            city, state, zipcode, title, seats, special_request, display_now, cost)
             return redirect( url_for('showmy') )
-            #eventuallymaybe flash something? 
 
 
 @app.before_first_request

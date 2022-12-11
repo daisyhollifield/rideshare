@@ -23,6 +23,7 @@ form{
     padding: 10px;
     line-height: 25px;
 }
+
 .post-block {
     width: 600px;
     padding: 10px;
@@ -42,41 +43,28 @@ form{
     top:0;
     right:0;
 }
-#driver-block{
-    color:rgb(85, 85, 135);
+
+.offering-post{
+    background-color: #8ad281
 }
 
-#destination-block{
-    color:rgb(135, 93, 85);
-}
-
-#ride-block{
-    color:rgb(155, 72, 56);
-}
-
-.driver-info-block{
-    margin: 5px;
-    background-color: #c2f6bb;
-    line-height: 5px;
-    padding: 5px;
-}
-
-.rider-info-block{
-    margin: 5px;
-    background-color: #caf4ed;
-    line-height: 5px;
-    padding: 5px;
-}
-
-#offering{
-    background-color: #8ad281;
-}
-
-#seeking{
+.looking-for-post{
     background-color: #97d1ca;
 }
 
+.offering-info{
+    margin: 5px;
+    background-color: #c2f6bb;
+    line-height: 5px;
+    padding: 5px;  
+}
 
+.seeking-info{
+    margin: 5px;
+    background-color: #caf4ed;
+    line-height: 5px;
+    padding: 5px;  
+}
 
 body {background-color: #FFCCBB;}
 
@@ -91,7 +79,7 @@ h2, h3 {
 }
 
 h4 {
-    color: rgb(85, 161, 85);
+    color: rgb(0, 0, 0);
 }
 
 /* for a simple navbar. Talk to Scott if you want drop-downs. */

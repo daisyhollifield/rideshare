@@ -340,6 +340,458 @@ if __name__ == '__main__':
         port = os.getuid()
     app.debug = True
     app.run('0.0.0.0',port)
+import cs304dbi as dbi
+
+# ==========================================================
+# The CRUD functions that do most of the CRUD work.
+
+def insertpost(conn, username, type, date, time, destination, street_address, city, state, 
+zipcode, title, seats, special_request, display_now, cost):
+    """ Inserts a post into the database based on a given username, type, date, time,
+    destination, street address, city, state zipcode, seats, special request, display 
+    now attribute and cost. """
+    curs = dbi.dict_cursor(conn)
+    curs.execute(''' insert into Post(username, type, date, time, destination, street_address,
+        city, state, zipcode, title, seats, special_request, display_now, cost) 
+        values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);''',
+                      [username, type, date, time, destination, street_address, city, state, 
+                      zipcode, title, seats, special_request, display_now, cost])
+    conn.commit()
+
+
+def insertUser(conn, username, name):
+    """ inserts a given user into the User table """
+    curs = dbi.dict_cursor(conn)
+    curs.execute(''' insert into User(username,name)
+        values (%s,%s);''',
+                      [username, name])
+    conn.commit()
+
+def updateUser(conn, username, phone_number, class_year, major, hometown):
+    """ updates the User table with give phone number, class year, major and hometown """
+    curs = dbi.dict_cursor(conn)
+    curs.execute('''update User set phone_number = %s, class_year = %s,  major = %s, 
+    hometown = %s where username = %s''',
+             [phone_number, class_year, major, hometown, username])
+    conn.commit()
+
+def updateProfilePic(conn, their_username, filename):
+    """ updates the Picfile table given a filename """
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+                '''insert into Picfile(username,filename) values (%s,%s)
+                   on duplicate key update filename = %s''',
+                [their_username, filename, filename])
+    conn.commit()
+
+def deactivatePost(conn, pid):
+    """ sets a given Post's diplay_now attribute to false"""
+    curs = dbi.dict_cursor(conn)
+    curs.execute('update Post set display_now = False where pid = %s', [pid])
+    conn.commit()
+
+def addComment(conn, username, pid, content, time):
+    """ adds a comment into the Comment table given its post id, content, and 
+    the time of comment """
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+                'insert into Comment(username,pid, content, time) values (%s,%s,%s,%s)',
+                [username, pid, content, time])
+    conn.commit()import cs304dbi as dbi
+
+# ==========================================================
+# The functions that do most of the queue and display of posting work.
+
+def get_posts_with_usernames(conn):
+    """ gets info about all posts and corresponding usernames """
+    curs = dbi.dict_cursor(conn)
+    curs.execute('''select * from Post inner join User using (username)
+     where display_now = True order by date, time;''')
+    return curs.fetchall()
+
+def get_profile_info(conn, username):
+    """ gets profile info about a given username"""
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from User where username = %s;', [username])
+    return curs.fetchone()
+    
+def get_all_users(conn):
+    """ returns a dictionary containing all of the users and their info 
+    in the User table  """
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from User order by username')
+    return curs.fetchall()
+
+def get_all_states(conn):
+    """ returns a list containing all of the states with no repeats in the Post table where
+    their display attribute is true """
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select `state` from Post where display_now = True')
+    all_states = curs.fetchall()
+    states = []
+    for s in all_states:
+        s_name = s['state']
+        if s_name not in states:
+            states.append(s_name)
+    return sorted(states)
+
+def get_result_posts(conn, destination, street_address, city, state, zipcode, 
+user, date, time, seats, cost):
+    """ returns a dictionary of posts that match the given inputed criteria """
+    args_lst = []
+    curs = dbi.dict_cursor(conn)
+    if destination == "":
+        destination_string = ''
+    else:
+        destination_string = 'where destination = %s'
+        args_lst.append(destination)
+
+    if street_address == "":
+        street_address_string = ''
+    else:
+        if destination_string == "":
+            street_address_string = 'where street_address = %s'
+            args_lst.append(street_address)
+        else:
+            street_address_string = ' and street_address = %s' 
+            args_lst.append(street_address)
+    if city == "":
+        city_string = ""
+    else:
+        if destination_string == "" and street_address_string == "":
+            city_string = 'where city = %s'
+            args_lst.append(city)
+        else:
+            city_string = ' and city = %s'
+            args_lst.append(city)
+    if state == "none":
+        state_string = ""
+    else:
+        if destination_string == "" and street_address_string == "" and city_string == "":
+            state_string = 'where state = %s'
+            args_lst.append(state)
+        else:
+            state_string = ' and state = %s'
+            args_lst.append(state)
+    
+    if zipcode == "":
+        zipcode_string = ""
+    else:
+        if (destination_string == "" and street_address_string == "" and city_string == "" 
+        and state_string == ""):
+            zipcode_string = 'where zipcode = %s'
+            args_lst.append(zipcode)
+        else:
+            zipcode_string = ' and zipcode = %s'
+            args_lst.append(zipcode)
+    if user == "none":
+        user_string = ''
+    else:
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == ""):
+            user_string = 'where username = %s'
+            args_lst.append(user)
+        else:
+            user_string = ' and username = %s'
+            args_lst.append(user)
+
+    if date == "":
+        date_string = ""
+    else:
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == "" and user_string == ""):
+            date_string = 'where date = %s'
+            args_lst.append(date)
+        else:
+            date_string = ' and date = %s'
+            args_lst.append(date)
+
+    if time == "":
+        time_string = ""
+    else:
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == "" and user_string == "" and date_string == ""):
+            time_string = 'where time = %s'
+            args_lst.append(time)
+        else:
+            time_string = ' and time = %s'
+            args_lst.append(time)
+    if seats == '':
+        seats_string = ''
+    else:
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == "" and user_string == ''
+         and date_string == '' and time_string == ''):
+            seats_string = 'where seats = %s'
+            args_lst.append(seats)
+        else:
+            seats_string = ' and seats = %s'
+            args_lst.append(seats)
+    
+    if cost == '':
+        cost_string = ''
+    else:
+        if (destination_string == '' and street_address_string == "" and city_string== "" 
+        and state_string == "" and zipcode_string == "" and user_string == '' and 
+        date_string == "" and time_string == '' and seats_string == ''):
+            cost_string = 'where cost = %s'
+            args_lst.append(cost)
+        else:
+            cost_string = ' and cost = %s'
+            args_lst.append(cost)
+    if (destination_string == '' and street_address_string == "" and city_string== "" 
+    and state_string == "" and zipcode_string == "" and user_string == '' 
+    and date_string == "" and time_string == '' and seats_string == '' and cost_string == ''):
+        display_now_string = 'where display_now = True'
+    else:
+        display_now_string = ' and display_now = True'
+    curs.execute('select * from Post inner join User using (username) ' 
+    + destination_string + street_address_string + city_string + state_string + 
+    zipcode_string + user_string + date_string + time_string + seats_string + 
+    cost_string + display_now_string + ' order by date, time;', args_lst)
+    return curs.fetchall()
+
+
+def get_post_comments(conn, pid):
+    """ returns a dictionary of all the comments for a given post """
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from Comment where pid = %s;', [pid])
+    return curs.fetchall()
+
+
+def userExists (conn, username):
+    """ returns a boolean to see whether the user exists in the User table """
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from User where username = %s;', [username])
+    return (curs.fetchone() != None)
+
+
+def getProfilePic(conn, username):   
+    """ returns a dictionary containing the information in the Picfile table for 
+    a given username """
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+        '''select * from Picfile where username = %s''',
+        [username])
+    return curs.fetchone()
+
+def get_post_info(conn, post_id):
+    """ returns a dictionary containing the information in the Post table for 
+    a given post """
+    curs = dbi.dict_cursor(conn)
+    curs.execute(
+        '''select * from Post where pid = %s''',
+        [post_id])
+    return curs.fetchone()/* the --color-header and others are CSS variables, which we access later. 
+*/
+
+HTML {
+    --color-header: #264653;  /* color for H1-H6 and others. was deepskyblue but poor contrast. */
+    --color-hilite: #e9c46a;  /* was red, but this avoids WAVE contrast errors */ 
+    --color-focus: #f4a261;
+    --font-family: Georgia;
+    font-family: var(--font-family)
+}
+
+/* For flashed messages; make them stand out using red and italics */
+
+#messages {
+    color: var(--color-hilite);
+    font-style: italic;
+}
+
+form{
+    background-color: peachpuff;
+    float: left;
+    margin: 0px 25px 0px 25px;
+    padding: 10px;
+    line-height: 25px;
+}
+
+.post-block {
+    width: 600px;
+    padding: 10px;
+    margin: auto;
+    margin-left: 225px;
+    margin-bottom: 15px;
+  }
+  
+  .login{
+    margin: 5px;
+    background-color: #add8e6;
+    line-height: 5px;
+    padding: 5px;
+    margin-top: 1px;
+    margin-right: 2px;
+    position:absolute;
+    top:0;
+    right:0;
+}
+
+.offering-post{
+    background-color: #8ad281
+}
+
+.looking-for-post{
+    background-color: #97d1ca;
+}
+
+.offering-info{
+    margin: 5px;
+    background-color: #c2f6bb;
+    line-height: 5px;
+    padding: 5px;  
+}
+
+.seeking-info{
+    margin: 5px;
+    background-color: #caf4ed;
+    line-height: 5px;
+    padding: 5px;  
+}
+
+body {background-color: #FFCCBB;}
+
+h1 {
+    font-size: 200%;
+    color: var(--color-header);
+}
+
+   
+h2, h3 {
+    color: var(--color-header);
+}
+
+h4 {
+    color: rgb(0, 0, 0);
+}
+
+/* for a simple navbar. Talk to Scott if you want drop-downs. */
+nav > ul {
+    display: flex;
+    flex-direction: row;
+    color: #2a9d8f
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    color: #E76F51
+
+}
+
+nav > ul > li {
+    flex: 0 0 auto;
+    width: 15em; 
+}
+
+nav button, nav a {
+    display: block;
+    box-sizing: border-box; /* easier to make button and A the same size */
+    width: 100%;
+    height: 40px;
+    padding: 0px;
+    padding-bottom: 5px;
+    background-color: var(--color-header); /* was #3498db */
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    /* Firefox uses font -apple-system unless I repeat the font spec here. */
+    font-family: var(--font-family);
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: white;
+    
+}
+
+/* Only the top-level buttons are centered; lower ones are left-aligned. */
+nav > ul > li > button , nav > ul > li > a {
+    text-align: center;
+}
+
+/* because of the margin trick, this can only be used for the last element */
+
+nav li.right {
+    margin-left: auto;
+}
+
+nav button:hover, button:focus, nav a:hover, nav a:focus {
+    background-color: var(--color-focus);
+}
+
+.profile-page{
+    background-color: #c2f6bb;
+    line-height: 15px;
+    padding: 5px;
+    margin: 10px;
+}
+
+.profile-pic{
+    padding: 10px;
+    margin: 10px;
+    display: inline-block;
+}
+
+use rideshare_db;
+
+drop table if exists Picfile;
+drop table if exists `Comment`;
+drop table if exists `Post`;
+drop table if exists `User`;
+
+
+
+CREATE TABLE `User` (
+  `username` varchar(30),
+  `name` varchar(30),
+  `phone_number` varchar(12),
+  `class_year` varchar(4),
+  `major` varchar(30),
+  `hometown` varchar(100),
+  PRIMARY KEY (`username`)
+);
+
+CREATE TABLE `Post` (
+  `pid` int auto_increment,
+  `username` varchar(30),
+  `type` ENUM('looking for', 'offering'),
+  `destination` varchar(100),
+  `street_address` varchar(100),
+  `city` varchar(30),
+  `state` varchar(2),
+  `zipcode` varchar(5),
+  `date` date,
+  `time` time,
+  `title` varchar(100),
+  `seats` int,
+  `special_request` varchar(1000),
+  `display_now` boolean,
+  `cost` int,
+  PRIMARY KEY (`pid`)
+);
+
+CREATE TABLE `Comment` (
+  `cid` int auto_increment,
+  `username` varchar(30),
+  `pid` int,
+  `content` varchar(2200),
+  `time` datetime,
+  PRIMARY KEY (`cid`)
+);
+
+create table Picfile (
+    `username` varchar(30) primary key,
+    filename varchar(50),
+    foreign key (`username`) references User(`username`)
+        on delete cascade on update cascade
+);
+
+ALTER TABLE `Comment` ADD FOREIGN KEY (`username`) REFERENCES `User` (`username`);
+
+ALTER TABLE `Comment` ADD FOREIGN KEY (`pid`) REFERENCES `Post` (`pid`);
+
+ALTER TABLE `Post` ADD FOREIGN KEY (`username`) REFERENCES `User` (`username`);
 <!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db.
     Base HTML file to that uses template inheritance
     Daisy, Lindsay, and Valerie. 
@@ -795,154 +1247,4 @@ method="post">
     
     
     {% endblock %}
-    /* the --color-header and others are CSS variables, which we access later. 
-*/
-
-HTML {
-    --color-header: #264653;  /* color for H1-H6 and others. was deepskyblue but poor contrast. */
-    --color-hilite: #e9c46a;  /* was red, but this avoids WAVE contrast errors */ 
-    --color-focus: #f4a261;
-    --font-family: Georgia;
-    font-family: var(--font-family)
-}
-
-/* For flashed messages; make them stand out using red and italics */
-
-#messages {
-    color: var(--color-hilite);
-    font-style: italic;
-}
-
-form{
-    background-color: peachpuff;
-    float: left;
-    margin: 0px 25px 0px 25px;
-    padding: 10px;
-    line-height: 25px;
-}
-
-.post-block {
-    width: 600px;
-    padding: 10px;
-    margin: auto;
-    margin-left: 225px;
-    margin-bottom: 15px;
-  }
-  
-  .login{
-    margin: 5px;
-    background-color: #add8e6;
-    line-height: 5px;
-    padding: 5px;
-    margin-top: 1px;
-    margin-right: 2px;
-    position:absolute;
-    top:0;
-    right:0;
-}
-
-.offering-post{
-    background-color: #8ad281
-}
-
-.looking-for-post{
-    background-color: #97d1ca;
-}
-
-.offering-info{
-    margin: 5px;
-    background-color: #c2f6bb;
-    line-height: 5px;
-    padding: 5px;  
-}
-
-.seeking-info{
-    margin: 5px;
-    background-color: #caf4ed;
-    line-height: 5px;
-    padding: 5px;  
-}
-
-body {background-color: #FFCCBB;}
-
-h1 {
-    font-size: 200%;
-    color: var(--color-header);
-}
-
-   
-h2, h3 {
-    color: var(--color-header);
-}
-
-h4 {
-    color: rgb(0, 0, 0);
-}
-
-/* for a simple navbar. Talk to Scott if you want drop-downs. */
-nav > ul {
-    display: flex;
-    flex-direction: row;
-    color: #2a9d8f
-}
-
-nav ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-    color: #E76F51
-
-}
-
-nav > ul > li {
-    flex: 0 0 auto;
-    width: 15em; 
-}
-
-nav button, nav a {
-    display: block;
-    box-sizing: border-box; /* easier to make button and A the same size */
-    width: 100%;
-    height: 40px;
-    padding: 0px;
-    padding-bottom: 5px;
-    background-color: var(--color-header); /* was #3498db */
-    border: 2px solid black;
-    border-radius: 5px;
-    cursor: pointer;
-    /* Firefox uses font -apple-system unless I repeat the font spec here. */
-    font-family: var(--font-family);
-    font-weight: bold;
-    font-size: 1.4rem;
-    color: white;
     
-}
-
-/* Only the top-level buttons are centered; lower ones are left-aligned. */
-nav > ul > li > button , nav > ul > li > a {
-    text-align: center;
-}
-
-/* because of the margin trick, this can only be used for the last element */
-
-nav li.right {
-    margin-left: auto;
-}
-
-nav button:hover, button:focus, nav a:hover, nav a:focus {
-    background-color: var(--color-focus);
-}
-
-.profile-page{
-    background-color: #c2f6bb;
-    line-height: 15px;
-    padding: 5px;
-    margin: 10px;
-}
-
-.profile-pic{
-    padding: 10px;
-    margin: 10px;
-    display: inline-block;
-}
-

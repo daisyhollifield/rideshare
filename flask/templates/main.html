@@ -13,68 +13,67 @@
 
 
 <form method= GET action="{{url_for('result')}}">
-  <label for="destination-name">Destination Name:</label><br>
-  <input type="text" name="destination-name"><br>
-  <label for="street-address">Street Address:</label><br>
-  <input type="text" name="street-address"><br>
-  <label for="city">City:</label><br>
-  <input type="text" name="city"><br>
-  <label for="state">State:</label>
+  <label>Destination Name:<br>
+  <input type="text" name="destination-name"></label><br>
+  <label>Street Address:<br>
+  <input type="text" name="street-address"></label><br>
+  <label>City:<br>
+  <input type="text" name="city"></label><br>
+  <label>State:
   <select id="menu-state" name="menu-state">
   <option value="none"></option>
     {% for state in states %}
     <option value="{{state}}">{{state}}</option>
     {% endfor %}
- </select><br>
- <label for="zip">Zip Code:</label><br>
-  <input type="text" name="zip"><br>
-  <label for="user">User:</label><br>
+ </select></label><br>
+ <label>Zip Code:<br>
+  <input type="text" name="zip"></label><br>
+  <label>User:<br>
   <select id="menu-user" name = "menu-user">
     <option value="none"></option>
     {% for user in users %}
     <option value="{{user.username}}">{{user.username}} ({{user.name}})</option>
     {% endfor %}
-  </select><br>
-  <label for="date">Date:</label>
-  <input type="date" name="date"><br>
-  <label for="time">Time:</label><br>
-  <input type="time" name="time"><br>
-  <label for="cost">Cost ($):</label><br>
-  <input type="number" name="cost"><br>
-  <label for="seats">Seats:</label><br>
-  <input type="number" name="seats"><br>
+  </select></label><br>
+  <label> Date:
+  <input type="date" name="date"></label><br>
+  <label>Time:<br>
+  <input type="time" name="time"></label><br>
+  <label>Cost ($):<br>
+  <input type="number" name="cost"></label><br>
+  <label>Seats:<br>
+  <input type="number" name="seats"></label><br>
   <p><input type="submit" value="Search"></p>
      
 </form>
 
-
 {% for post in posts %}
 {% if post.type == "offering" %}
-<div class ="post-block" id = "offering">
-  <h3>Offering: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</href></a>) </h3> 
+<div class = "offering-post post-block ">
+  <h3>Offering: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</a>) </h3> 
 {% else %}
-<div class ="post-block" id = "seeking">
-  <h3>Looking for: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</href></a>) </h3> 
+<div class = "looking-for-post post-block">
+  <h3>Looking for: (<a href = "{{ url_for( 'post', post_id = post.pid) }}">{{post.title}}</a>) </h3> 
 {% endif %}
     {% if post.type == "offering" %}
-    <div class="driver-info-block" id="driver-block">
+    <div class = "offering-info">
     {% else %}
-    <div class="rider-info-block" id="driver-block">
+    <div class = "seeking-info">
     {% endif %}
-        <p>User: {{post.name}} (<a href = "{{ url_for( 'profile', username = post.username ) }}">{{post.username}}</href></a>)</p>
+        <p>User: {{post.name}} (<a href = "{{ url_for( 'profile', username = post.username ) }}">{{post.username}}</a>)</p>
         <p>Phone Number: {{post.phone_number}}</p>
     </div>
     {% if post.type == "offering" %}
-    <div class="driver-info-block" id="destination-block">
+    <div class = "offering-info">
     {% else %}
-    <div class="rider-info-block" id="destination-block">
+    <div class = "seeking-info">
     {% endif %}
         <p>{{post.destination}}, {{post.street_address}}, {{post.city}}, {{post.state}} {{post.zipcode}}</p>
     </div>
     {% if post.type == "offering" %}
-    <div class ="driver-info-block" id="ride-block">
+    <div class = "offering-info">
     {% else %}
-    <div class ="rider-info-block" id="ride-block">
+    <div class = "seeking-info">
     {% endif %}
     <p>Date: {{post.date.month}}/{{post.date.day}}/{{post.date.year}} Time: {{post.time}}</p>
     <p>Seats: {{post.seats}}</p>
