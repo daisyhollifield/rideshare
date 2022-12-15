@@ -1,0 +1,82 @@
+<!-- Flask/PyMySQL app to post ride request and offers in the rideshare_db.  
+    HTML file that implements update post page
+    Daisy, Lindsay, and Valerie. 
+    Fall 2022 -->
+
+    {% extends "base.html" %}
+
+    {% block main_content %}
+    <h1>Update your Post!</h1>
+    
+    <p>Please use this to update your post. If you don't want to change an attribute, leave that field blank!</p>
+    
+
+    <form action="{{url_for('update_post', pid = pid)}}" enctype="multipart/form-data"
+    method="post">
+
+    <!-- modern browsers will insist that
+     "required" elemements are non-empty -->
+     <p>Your post information:</p>
+    
+    <p>Here is your current post type: {{current_type}}</p>
+    <p><label>Your Post Type:
+        <input 
+               type="text" name="ride_type" placeholder= {{current_type}}>
+        </label></p> 
+
+    <p>Here is your current post title: {{current_title}}</p>
+    <p><label>Your Post Title:
+        <input 
+                type="text" name="title" placeholder= {{current_title}}>
+        </label></p> 
+    
+    <p>Here is your current destination: {{current_dest}}</p>
+    <p><label>Your current destination:
+        <input 
+               type="text" name="destination" placeholder= {{current_dest}}>
+    </label></p>
+    
+    <p>Here is your destination street address: {{current_stadd}}</p>
+    <p><label>Street Address:
+    <input 
+           type="text" name="stadd" placeholder={{current_stadd}}>
+    </label></p>
+
+    <p>Here is your destination state: {{current_state}}</p>
+    <p><label>State:
+    <input 
+           type="text" name="state" placeholder={{current_state}}>
+    </label></p>
+    
+    <p>Here is your destination zip code: {{current_zip}}</p>
+    <p><label>Zip:
+    <input 
+           type="text" name="zip" placeholder={{current_zip}}>
+    </label></p>
+
+    <p><label>Here is your date of ride wanted/offering:
+        <input 
+               type="date" name="post-date" placeholder={{current_date}}>
+        </label> 
+
+    <p><label>Here is your time of Ride wanted/offering:
+        <input 
+                type="time" name="post-time" >
+        </label> 
+    
+    <p><label>Here are your Special Requests:
+        <input 
+                type="text" name="special_requests" placeholder= {{current_request}}>
+        </label></p> 
+
+    <p><label>Here is your cost of ride:
+        <input 
+                type="number" name="cost" placeholder={{current_cost}}>
+        </label> 
+
+    <p><input type="submit" value="Update Post!">
+    </form>
+    
+        
+    {% endblock %}
+    
