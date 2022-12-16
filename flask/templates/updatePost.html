@@ -18,60 +18,64 @@
      "required" elemements are non-empty -->
      <p>Your post information:</p>
     
-    <p>Here is your current post type: {{current_type}}</p>
-    <p><label>Your Post Type:
+    <p>Your current post type: {{current_type}}</p>
+    <p><label>Update your Post Type:
         <input 
                type="text" name="ride_type" placeholder= {{current_type}}>
         </label></p> 
 
-    <p>Here is your current post title: {{current_title}}</p>
-    <p><label>Your Post Title:
+    <p>Your current post title: {{current_title}}</p>
+    <p><label>Update your Post Title:
         <input 
                 type="text" name="title" placeholder= {{current_title}}>
         </label></p> 
     
-    <p>Here is your current destination: {{current_dest}}</p>
-    <p><label>Your current destination:
+    <p>Your current destination: {{current_dest}}</p>
+    <p><label>Update your current destination:
         <input 
                type="text" name="destination" placeholder= {{current_dest}}>
     </label></p>
     
-    <p>Here is your destination street address: {{current_stadd}}</p>
-    <p><label>Updated Street Address:
+    <p>Your destination street address: {{current_stadd}}</p>
+    <p><label>Update your Street Address:
     <input 
            type="text" name="stadd" placeholder={{current_stadd}}>
     </label></p>
 
-    <p>Here is your destination state: {{current_state}}</p>
-    <p><label>Updated State:
+    <p>Your destination state: {{current_state}}</p>
+    <p><label>Update your State:
     <input 
            type="text" name="state" placeholder={{current_state}}>
     </label></p>
     
-    <p>Here is your destination zip code: {{current_zip}}</p>
-    <p><label>Updated Zip:
+    <p>Your destination zip code: {{current_zip}}</p>
+    <p><label>Update your Zip:
     <input 
            type="text" name="zip" placeholder={{current_zip}}>
     </label></p>
 
-    <p><label>Update your date of ride wanted/offering:
+    <p>Your date of ride wanted/offering: {{current_date}}</p>
+    <p><label>Update your Date:
         <input 
                type="date" name="post-date" placeholder={{current_date}}>
         </label> 
 
-    <p><label>Update your time of Ride wanted/offering:
+    <p>Your time of ride: {{current_time}}</p>
+    <p><label>Update your time here:
         <input 
                 type="time" name="post-time" >
         </label> 
     
-    <p><label>Update your Special Requests:
+    <p>Your special requests: {{current_request}}</p>
+    <p><label>Update your requests here:
         <input 
-                type="text" name="special_requests" placeholder= {{current_request}}>
-        </label></p> 
+                type="text" name="post-request" >
+        </label> 
 
-    <p><label>Update your cost of ride:
+    <p>Your cost of ride: {{current_cost}}</p>
+    <p><label>Update your cost here:
         <input 
-                type="number" name="cost" placeholder={{current_cost}}>
+                type="text" name="post-cost">
         </label> 
 
     <p><input type="submit" value="Update Post!">
