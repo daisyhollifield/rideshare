@@ -175,6 +175,107 @@ def update_user():
                 cf.updateProfilePic(conn, their_username, filename)
             return redirect( url_for('profile', username = their_username))   
 
+@app.route('/update_post/<pid>', methods =['GET', 'POST'])
+def update_post(pid):
+    if 'CAS_USERNAME' not in session:
+        return redirect(url_for('applogin'))
+    else:
+        their_username = session['CAS_USERNAME']
+        conn = dbi.connect()
+        if request.method == 'GET':
+            #blank complete profile form 
+            this_post = qf.get_post_with_pid(conn, pid)
+            current_type=this_post['type']
+            current_dest=this_post['destination']
+            current_stadd=this_post['street_address']
+            current_city=this_post['city']
+            current_state=this_post['state']
+            current_zip=this_post['zipcode']
+            current_date=this_post['date']
+            current_time=this_post['time']
+            current_title=this_post['title']
+            current_seats=this_post['seats']
+            current_request=this_post['special_request']
+            current_cost=this_post['cost']
+            return render_template("updatePost.html", page_title='Update Post', current_type=current_type, 
+            current_dest = current_dest, current_stadd=current_stadd, current_city=current_city, 
+            current_state=current_state, current_zip=current_zip, current_date=current_date, current_time=current_time,
+            current_title = current_title, current_seats=current_seats, current_request=current_request)
+        else: 
+            #pre form info: 
+            this_post = qf.get_post_with_pid(conn, pid)
+            post_id = this_post['pid']
+            current_type=this_post['type']
+            current_dest=this_post['destination']
+            current_stadd=this_post['street_address']
+            current_city=this_post['city']
+            current_state=this_post['state']
+            current_zip=this_post['zipcode']
+            current_date=this_post['date']
+            current_time=this_post['time']
+            current_title=this_post['title']
+            current_seats=this_post['seats']
+            current_request=this_post['special_request']
+            current_cost=this_post['cost']
+            return render_template("updatePost.html", page_title='Update Post', current_type=current_type, 
+            current_dest = current_dest, current_stadd=current_stadd, current_city=current_city, 
+            current_state=current_state, current_zip=current_zip, current_date=current_date, current_time=current_time
+            , current_title=current_title, current_seats=current_seats, current_request=current_request, pid = pid)
+
+            #add something to check in file upload is empty
+            dest = request.form['destination']
+            dest_empty = (dest == "")
+            if dest_empty:
+                dest = current_dest
+            ride_type = request.form['ride_type']
+            if (ride_type == ""):
+                ride_type = current_type
+            stadd = request.form['stadd']
+            if (stadd == ""):
+                stadd = current_stadd
+
+            city = request.form['city']
+            if (city == ""):
+                city = current_city   
+
+            state = request.form['state']
+            if (state == ""):
+                state = current_state
+
+            zip_ = request.form['zip']
+            if (zip_ == ""):
+                zip_ = current_zip
+
+            date = request.form['date']
+            if (date == ""):
+                date = current_date
+
+            time = request.form['time']
+            if (time == ""):
+                time = current_time
+
+            seats = request.form['seats']
+            if (seats == ""):
+                seats = current_seats
+
+            title = request.form['title']
+            if (title == ""):
+                title = current_title 
+
+            special_request = request.form['specia_requests']
+            if (special_request == ""):
+                special_request = current_request
+
+            cost = request.form['cost']
+            if (cost == ""):
+                cost = current_
+        
+            cf.updatePost(conn, username=their_username, destination=dest, stadd = stadd, 
+            city = city, state = state, zipcode = zipcode, cost = cost, time = time, title = title, 
+            seats = seats, special_request = special_request)
+
+            return redirect( url_for('post', post_id = post_id))   
+
 
 @app.route('/after_logout/')
 def after_logout():
