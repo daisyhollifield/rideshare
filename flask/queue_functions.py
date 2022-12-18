@@ -44,7 +44,6 @@ def get_all_states(conn):
 def get_result_posts(conn, destination, street_address, city, state, zipcode, 
 user, date, time, seats, cost):
     """ returns a dictionary of posts that match the given inputed criteria """
-    print(destination)
     args_lst = []
     curs = dbi.dict_cursor(conn)
     if destination == "":
@@ -52,7 +51,6 @@ user, date, time, seats, cost):
     else:
         destination_string = 'where destination = %s'
         args_lst.append(destination)
-        print(args_lst)
 
     if street_address == "":
         street_address_string = ''
