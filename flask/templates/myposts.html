@@ -39,10 +39,12 @@
         {% endif %}
         <p>Date: {{post.date.month}}/{{post.date.day}}/{{post.date.year}} Time: {{post.time}}</p>
         <p>Seats: {{post.seats}}</p>
-        <p>Cost: ${{post.cost}}</p>
+        <p>Cost: ${{post.cost}} Pid: {{post.pid}}</p>
         <p>Special Request: {{post.special_request}}</p>
-    </div></div>
-    <p><button name="pid" type="submit" value={{post.pid}}>Delete Post</button>  </p>
+    </div>
+    <p><button name="pid" type="submit" value={{post.pid}}>Delete Post</button></p>
+    <button type="button"><a href="{{url_for('update_post', pid = post.pid)}}">Update Post </a></button>
+    </div>
     </form>
     
 

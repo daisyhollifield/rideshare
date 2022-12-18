@@ -10,6 +10,11 @@ def get_posts_with_usernames(conn):
      where display_now = True order by date, time;''')
     return curs.fetchall()
 
+def get_post_with_pid(conn, pid):
+    curs = dbi.dict_cursor(conn)
+    curs.execute('select * from Post where pid = %s', [pid])
+    return curs.fetchone()
+
 def get_profile_info(conn, username):
     """ gets profile info about a given username"""
     curs = dbi.dict_cursor(conn)
