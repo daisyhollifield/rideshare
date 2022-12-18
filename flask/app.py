@@ -57,10 +57,12 @@ def index():
         if 'CAS_USERNAME' not in session:
             return redirect(url_for('applogin'))
         else:
+            now = datetime.now()
+            current_date = now.date()
             is_logged_in = True
             username = session['CAS_USERNAME']
             conn = dbi.connect()
-            posts = qf.get_posts_with_usernames(conn)
+            posts = qf.get_posts_with_usernames(conn, current_date)
             users = qf.get_all_users(conn)
             states = qf.get_all_states(conn)
             return render_template('main.html',page_title='Wellesley College Rideshare',
@@ -72,6 +74,8 @@ def index():
         else: 
             is_logged_in = True
             username = session['CAS_USERNAME']
+            now = datetime.now()
+            current_date = now.date()
             conn = dbi.connect()
             destination = request.form.get('destination-name')
             street_address = request.form.get('street-address')
@@ -86,7 +90,7 @@ def index():
             users = qf.get_all_users(conn)
             states = qf.get_all_states(conn)
             posts = qf.get_result_posts(conn, destination, street_address, city, state, zipcode, 
-                user, date, time, seats, cost)
+                user, date, time, seats, cost, current_date)
             return render_template('main.html',page_title='Wellesley Ride Share Results', posts = posts,
                 users = users, states=states, username=username, is_logged_in=is_logged_in)
 
@@ -97,11 +101,13 @@ def my_posts():
     if 'CAS_USERNAME' not in session:
             return redirect(url_for('applogin'))
     else:
+        now = datetime.now()
+        current_date = now.date()
         is_logged_in = True
         username = session['CAS_USERNAME']
         conn = dbi.connect()
         myPosts = []
-        posts = qf.get_posts_with_usernames(conn)
+        posts = qf.get_posts_with_usernames(conn, current_date)
         for post in posts:
             if post['username'] == username:
                 myPosts.append(post)
