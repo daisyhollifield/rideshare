@@ -175,7 +175,7 @@ def update_user():
                 cf.updateProfilePic(conn, their_username, filename)
             return redirect( url_for('profile', username = their_username))   
 
-@app.route('/update_post/<pid>', methods =['GET', 'POST'])
+@app.route('/updatepost/<pid>', methods =['GET', 'POST'])
 def update_post(pid):
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
@@ -200,7 +200,7 @@ def update_post(pid):
             return render_template("updatePost.html", page_title='Update Post', current_type=current_type, 
             current_dest = current_dest, current_stadd=current_stadd, current_city=current_city, 
             current_state=current_state, current_zip=current_zip, current_date=current_date, current_time=current_time,
-            current_title = current_title, current_seats=current_seats, current_request=current_request)
+            current_title = current_title, current_seats=current_seats, current_request=current_request, pid = pid)
         else: 
             #pre form info: 
             this_post = qf.get_post_with_pid(conn, pid)
@@ -217,10 +217,7 @@ def update_post(pid):
             current_seats=this_post['seats']
             current_request=this_post['special_request']
             current_cost=this_post['cost']
-            return render_template("updatePost.html", page_title='Update Post', current_type=current_type, 
-            current_dest = current_dest, current_stadd=current_stadd, current_city=current_city, 
-            current_state=current_state, current_zip=current_zip, current_date=current_date, current_time=current_time
-            , current_title=current_title, current_seats=current_seats, current_request=current_request, pid = pid)
+    
 
             #add something to check in file upload is empty
             dest = request.form['destination']
@@ -242,19 +239,19 @@ def update_post(pid):
             if (state == ""):
                 state = current_state
 
-            zip_ = request.form['zip']
-            if (zip_ == ""):
-                zip_ = current_zip
+            zipcode = request.form['zip']
+            if (zipcode == ""):
+                zipcode = current_zip
 
-            date = request.form['date']
+            date = request.form['post-date']
             if (date == ""):
                 date = current_date
 
-            time = request.form['time']
+            time = request.form['post-time']
             if (time == ""):
                 time = current_time
 
-            seats = request.form['seats']
+            seats = request.form['post-seats']
             if (seats == ""):
                 seats = current_seats
 
@@ -262,20 +259,19 @@ def update_post(pid):
             if (title == ""):
                 title = current_title 
 
-            special_request = request.form['specia_requests']
+            special_request = request.form['post-request']
             if (special_request == ""):
                 special_request = current_request
 
-            cost = request.form['cost']
+            cost = request.form['post-cost']
             if (cost == ""):
-                cost = current_
+                cost = current_cost
         
-            cf.updatePost(conn, username=their_username, destination=dest, stadd = stadd, 
+            cf.updatePost(conn, username=their_username, destination=dest, street_address = stadd, 
             city = city, state = state, zipcode = zipcode, cost = cost, time = time, title = title, 
-            seats = seats, special_request = special_request)
+            seats = seats, special_request = special_request, type = ride_type, date = date, display_now = True)
 
-            return redirect( url_for('post', post_id = post_id))   
-
+            return redirect( url_for('showmy') )
 
 @app.route('/after_logout/')
 def after_logout():
