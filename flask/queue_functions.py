@@ -3,11 +3,11 @@ import cs304dbi as dbi
 # ==========================================================
 # The functions that do most of the queue and display of posting work.
 
-def get_posts_with_usernames(conn):
+def get_posts_with_usernames(conn, current_date):
     """ gets info about all posts and corresponding usernames """
     curs = dbi.dict_cursor(conn)
     curs.execute('''select * from Post inner join User using (username)
-     where display_now = True order by date, time;''')
+     where display_now = True and date >= %s order by date, time;''', [current_date])
     return curs.fetchall()
 
 def get_post_with_pid(conn, pid):
@@ -42,7 +42,7 @@ def get_all_states(conn):
     return sorted(states)
 
 def get_result_posts(conn, destination, street_address, city, state, zipcode, 
-user, date, time, seats, cost):
+user, date, time, seats, cost, current_date):
     """ returns a dictionary of posts that match the given inputed criteria """
     args_lst = []
     curs = dbi.dict_cursor(conn)
@@ -102,7 +102,13 @@ user, date, time, seats, cost):
             args_lst.append(user)
 
     if date == "":
-        date_string = ""
+        if (destination_string == '' and street_address_string == "" and city_string == "" 
+        and state_string == "" and zipcode_string == "" and user_string == ""):
+            date_string = "where date >= %s"
+            args_lst.append(current_date)
+        else:
+            date_string = " and date >= %s"
+            args_lst.append(current_date)
     else:
         if (destination_string == '' and street_address_string == "" and city_string == "" 
         and state_string == "" and zipcode_string == "" and user_string == ""):

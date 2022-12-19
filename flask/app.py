@@ -49,22 +49,50 @@ app.config['CAS_AFTER_LOGOUT'] = 'after_logout'
 app.config['UPLOADS'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
 
-@app.route('/')
+@app.route('/', methods =['GET', 'POST'])
 def index():
     '''Home page has a nav bar and shows all posts in the database. Redirects
     to applogin page if the user is not logged in.'''
-    if 'CAS_USERNAME' not in session:
-        return redirect(url_for('applogin'))
+    if request.method == 'GET':
+        if 'CAS_USERNAME' not in session:
+            return redirect(url_for('applogin'))
+        else:
+            now = datetime.now()
+            current_date = now.date()
+            is_logged_in = True
+            username = session['CAS_USERNAME']
+            conn = dbi.connect()
+            posts = qf.get_posts_with_usernames(conn, current_date)
+            users = qf.get_all_users(conn)
+            states = qf.get_all_states(conn)
+            return render_template('main.html',page_title='Wellesley College Rideshare',
+            posts = posts, users=users, states=states, username=username,
+            is_logged_in=is_logged_in)
     else:
-        is_logged_in = True
-        username = session['CAS_USERNAME']
-        conn = dbi.connect()
-        posts = qf.get_posts_with_usernames(conn)
-        users = qf.get_all_users(conn)
-        states = qf.get_all_states(conn)
-        return render_template('main.html',page_title='Wellesley College Rideshare',
-         posts = posts, users=users, states=states, username=username,
-         is_logged_in=is_logged_in)
+        if 'CAS_USERNAME' not in session:
+            return redirect(url_for('applogin'))
+        else: 
+            is_logged_in = True
+            username = session['CAS_USERNAME']
+            now = datetime.now()
+            current_date = now.date()
+            conn = dbi.connect()
+            destination = request.form.get('destination-name')
+            street_address = request.form.get('street-address')
+            city = request.form.get('city')
+            state = request.form.get('menu-state') 
+            zipcode = request.form.get('zip') 
+            user = request.form.get('menu-user') 
+            date = request.form.get('date')  
+            time = request.form.get('time')  
+            seats = request.form.get('seats')
+            cost = request.form.get('cost')
+            users = qf.get_all_users(conn)
+            states = qf.get_all_states(conn)
+            posts = qf.get_result_posts(conn, destination, street_address, city, state, zipcode, 
+                user, date, time, seats, cost, current_date)
+            return render_template('main.html',page_title='Wellesley Ride Share Results', posts = posts,
+                users = users, states=states, username=username, is_logged_in=is_logged_in)
 
 @app.route('/myposts/', methods =['GET', 'POST'])
 def my_posts():
@@ -73,11 +101,13 @@ def my_posts():
     if 'CAS_USERNAME' not in session:
             return redirect(url_for('applogin'))
     else:
+        now = datetime.now()
+        current_date = now.date()
         is_logged_in = True
         username = session['CAS_USERNAME']
         conn = dbi.connect()
         myPosts = []
-        posts = qf.get_posts_with_usernames(conn)
+        posts = qf.get_posts_with_usernames(conn, current_date)
         for post in posts:
             if post['username'] == username:
                 myPosts.append(post)
@@ -341,32 +371,6 @@ def post(post_id):
             content = request.form['new_comment']
             cf.addComment(conn, their_username, post_id, content, time)
             return redirect( url_for('post', post_id = post_id)) 
-
-@app.route('/result/')
-def result():
-    ''' takes the input of the filter form and returns the home page
-    with the corresponding posts that match the information specified
-    in the filter'''
-    if 'CAS_USERNAME' not in session:
-        return redirect(url_for('applogin'))
-    else: 
-        conn = dbi.connect()
-        destination = request.args.get('destination-name')
-        street_address = request.args.get('street-address')
-        city = request.args.get('city')
-        state = request.args.get('menu-state') 
-        zipcode = request.args.get('zip') 
-        user = request.args.get('menu-user') 
-        date = request.args.get('date')  
-        time = request.args.get('time')  
-        seats = request.args.get('seats')
-        cost = request.args.get('cost')
-        users = qf.get_all_users(conn)
-        states = qf.get_all_states(conn)
-        posts = qf.get_result_posts(conn, destination, street_address, city, state, zipcode, 
-        user, date, time, seats, cost)
-        return render_template('main.html',page_title='Wellesley Ride Share Results', posts = posts,
-        users = users, states=states)
 
 @app.route('/myposts/', methods =['GET'])
 def showmy():
