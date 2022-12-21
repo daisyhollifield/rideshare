@@ -1,7 +1,7 @@
 import cs304dbi as dbi
 
 # ==========================================================
-# The functions that do most of the queue and display of posting work.
+# The functions that do most of the queries and display of posting work.
 
 def get_posts_with_usernames(conn, current_date):
     """ gets info about all posts and corresponding usernames for posts
@@ -10,6 +10,8 @@ def get_posts_with_usernames(conn, current_date):
     curs.execute('''select * from Post inner join User using (username)
      where display_now = True and date >= %s order by date, time;''', [current_date])
     return curs.fetchall()
+
+#Valerie add function here that is identical to the one above but adds a where username=username clause
 
 def get_post_with_pid(conn, pid):
     curs = dbi.dict_cursor(conn)

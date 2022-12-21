@@ -33,14 +33,14 @@ def updateUser(conn, username, phone_number, class_year, major, hometown):
              [phone_number, class_year, major, hometown, username])
     conn.commit()
 
-def updatePost(conn, username, type, date, time, destination, street_address, city, state, 
-zipcode, title, seats, special_request, display_now, cost):
+def updatePost(conn, type, date, time, destination, street_address, city, state, 
+zipcode, title, seats, special_request, display_now, cost, pid):
     """ updates the Post table with given username, type, destination, street address, 
     city, state, zipcode, date, time, title, seats, special_request, display_now, cost"""
     curs = dbi.dict_cursor(conn)
-    curs.execute('update Post set type = %s, destination = %s,  street_address = %s, city = %s, state = %s, zipcode = %s, date = %s, time = %s, title = %s, seats = %s, special_request = %s, cost = %s where username = %s',
+    curs.execute('update Post set type = %s, destination = %s,  street_address = %s, city = %s, state = %s, zipcode = %s, date = %s, time = %s, title = %s, seats = %s, special_request = %s, cost = %s where pid = %s',
              [type, destination, street_address, city, state, zipcode, date, time, title, seats, 
-             special_request, cost, username])
+             special_request, cost, pid])
     conn.commit()
 
 def updateProfilePic(conn, their_username, filename):
