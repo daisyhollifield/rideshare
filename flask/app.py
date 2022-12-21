@@ -99,15 +99,11 @@ def my_posts():
         is_logged_in = True
         username = session['CAS_USERNAME']
         conn = dbi.connect()
-        myPosts = []
-        posts = qf.get_posts_with_usernames(conn, current_date)
-        for post in posts:
-            if post['username'] == username:
-                myPosts.append(post)
+        posts = qf.get_posts_by_username(conn, username)
         users = qf.get_all_users(conn)
         states = qf.get_all_states(conn)
         if request.method == 'GET':
-            return render_template('myposts.html',page_title='My Posts', posts = myPosts, 
+            return render_template('myposts.html',page_title='My Posts', posts = posts, 
             users=users, states=states, username=username, is_logged_in=is_logged_in)
             #need to pass in is_logged_in for CAS (even though we know it's true)
         
@@ -215,7 +211,8 @@ def update_post(pid):
                 return render_template("updatePost.html", page_title='Update Post', current_type=current_type, 
                 current_dest = current_dest, current_stadd=current_stadd, current_city=current_city, 
                 current_state=current_state, current_zip=current_zip, current_date=current_date, current_time=current_time,
-                current_title = current_title, current_seats=current_seats, current_request=current_request, pid = pid)
+                current_title = current_title, current_seats=current_seats, current_request=current_request, 
+            current_cost = current_cost,pid = pid)
             else: 
                 #pre form info: 
                 this_post = qf.get_post_with_pid(conn, pid)
