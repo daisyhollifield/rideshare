@@ -4,7 +4,8 @@ import cs304dbi as dbi
 # The functions that do most of the queue and display of posting work.
 
 def get_posts_with_usernames(conn, current_date):
-    """ gets info about all posts and corresponding usernames """
+    """ gets info about all posts and corresponding usernames for posts
+    whose date is equal to or later than the current date"""
     curs = dbi.dict_cursor(conn)
     curs.execute('''select * from Post inner join User using (username)
      where display_now = True and date >= %s order by date, time;''', [current_date])
@@ -30,7 +31,7 @@ def get_all_users(conn):
 
 def get_all_states(conn):
     """ returns a list containing all of the states with no repeats in the Post table where
-    their display attribute is true """
+    their display attribute is true and their date is equal to or later than the current date"""
     curs = dbi.cursor(conn)
     curs.execute('select `state` from Post where display_now = True group by state order by state')
     all_states = curs.fetchall()

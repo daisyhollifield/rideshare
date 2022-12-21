@@ -51,8 +51,9 @@ app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
 
 @app.route('/', methods =['GET', 'POST'])
 def index():
-    '''Home page has a nav bar and shows all posts in the database. Redirects
-    to applogin page if the user is not logged in.'''
+    '''Home page has a nav bar and shows all posts in the database whose date
+    is equal to or after the current date. Redirects to applogin page if the user is not 
+    logged in.'''
     if request.method == 'GET':
         if 'CAS_USERNAME' not in session:
             return redirect(url_for('applogin'))
@@ -85,7 +86,8 @@ def index():
 
 @app.route('/myposts/', methods =['GET', 'POST'])
 def my_posts():
-    '''myposts page shows all the posts that a user has created, 
+    '''myposts page shows all the posts that a user has created
+    whose date is equal to or later that the current date
     including both requests and offers.'''
     if 'CAS_USERNAME' not in session:
             return redirect(url_for('applogin'))
