@@ -79,7 +79,6 @@ def index():
             conn = dbi.connect()
             users = qf.get_all_users(conn)
             states = qf.get_all_states(conn)
-            print(request.form)
             posts = qf.get_result_posts(conn, request.form, current_date)
             return render_template('main.html',page_title='Wellesley Ride Share Results', posts = posts,
                 users = users, states=states, username=username, is_logged_in=is_logged_in)

@@ -31,19 +31,17 @@ def get_all_users(conn):
 def get_all_states(conn):
     """ returns a list containing all of the states with no repeats in the Post table where
     their display attribute is true """
-    curs = dbi.dict_cursor(conn)
-    curs.execute('select `state` from Post where display_now = True')
+    curs = dbi.cursor(conn)
+    curs.execute('select `state` from Post where display_now = True group by state order by state')
     all_states = curs.fetchall()
     states = []
     for s in all_states:
-        s_name = s['state']
-        if s_name not in states:
-            states.append(s_name)
-    return sorted(states)
+        states.append(s[0])
+    return states
 
 def get_result_posts(conn, dct, current_date):
     """ returns a dictionary of posts that match the given inputed criteria """
-    args_lst = []
+    args_lst = [] # adds each search element that is non-empty to an argument list to get corresponding posts
     curs = dbi.dict_cursor(conn)
     if dct['destination-name'] == "":
         destination_string = ''
