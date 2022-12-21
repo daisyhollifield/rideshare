@@ -77,20 +77,10 @@ def index():
             now = datetime.now()
             current_date = now.date()
             conn = dbi.connect()
-            destination = request.form.get('destination-name')
-            street_address = request.form.get('street-address')
-            city = request.form.get('city')
-            state = request.form.get('menu-state') 
-            zipcode = request.form.get('zip') 
-            user = request.form.get('menu-user') 
-            date = request.form.get('date')  
-            time = request.form.get('time')  
-            seats = request.form.get('seats')
-            cost = request.form.get('cost')
             users = qf.get_all_users(conn)
             states = qf.get_all_states(conn)
-            posts = qf.get_result_posts(conn, destination, street_address, city, state, zipcode, 
-                user, date, time, seats, cost, current_date)
+            print(request.form)
+            posts = qf.get_result_posts(conn, request.form, current_date)
             return render_template('main.html',page_title='Wellesley Ride Share Results', posts = posts,
                 users = users, states=states, username=username, is_logged_in=is_logged_in)
 

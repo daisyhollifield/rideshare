@@ -41,67 +41,65 @@ def get_all_states(conn):
             states.append(s_name)
     return sorted(states)
 
-def get_result_posts(conn, destination, street_address, city, state, zipcode, 
-user, date, time, seats, cost, current_date):
+def get_result_posts(conn, dct, current_date):
     """ returns a dictionary of posts that match the given inputed criteria """
     args_lst = []
     curs = dbi.dict_cursor(conn)
-    if destination == "":
+    if dct['destination-name'] == "":
         destination_string = ''
     else:
         destination_string = 'where destination = %s'
-        args_lst.append(destination)
-
-    if street_address == "":
+        args_lst.append(dct['destination-name'])
+    if dct['street-address'] == "":
         street_address_string = ''
     else:
         if destination_string == "":
             street_address_string = 'where street_address = %s'
-            args_lst.append(street_address)
+            args_lst.append(dct['street-address'])
         else:
             street_address_string = ' and street_address = %s' 
-            args_lst.append(street_address)
-    if city == "":
+            args_lst.append(dct['street-address'])
+    if dct['city'] == "":
         city_string = ""
     else:
         if destination_string == "" and street_address_string == "":
             city_string = 'where city = %s'
-            args_lst.append(city)
+            args_lst.append(dct['city'])
         else:
             city_string = ' and city = %s'
-            args_lst.append(city)
-    if state == "none":
+            args_lst.append(dct['city'])
+    if dct['menu-state'] == "none":
         state_string = ""
     else:
         if destination_string == "" and street_address_string == "" and city_string == "":
             state_string = 'where state = %s'
-            args_lst.append(state)
+            args_lst.append(dct['menu-state'])
         else:
             state_string = ' and state = %s'
-            args_lst.append(state)
+            args_lst.append(dct['menu-state'])
     
-    if zipcode == "":
+    if dct['zip'] == "":
         zipcode_string = ""
     else:
         if (destination_string == "" and street_address_string == "" and city_string == "" 
         and state_string == ""):
             zipcode_string = 'where zipcode = %s'
-            args_lst.append(zipcode)
+            args_lst.append(dct['zip'])
         else:
             zipcode_string = ' and zipcode = %s'
-            args_lst.append(zipcode)
-    if user == "none":
+            args_lst.append(dct['zip'])
+    if dct['menu-user'] == "none":
         user_string = ''
     else:
         if (destination_string == '' and street_address_string == "" and city_string == "" 
         and state_string == "" and zipcode_string == ""):
             user_string = 'where username = %s'
-            args_lst.append(user)
+            args_lst.append(dct['menu-user'])
         else:
             user_string = ' and username = %s'
-            args_lst.append(user)
+            args_lst.append(dct['menu-user'])
 
-    if date == "":
+    if dct['date'] == "":
         if (destination_string == '' and street_address_string == "" and city_string == "" 
         and state_string == "" and zipcode_string == "" and user_string == ""):
             date_string = "where date >= %s"
@@ -113,44 +111,44 @@ user, date, time, seats, cost, current_date):
         if (destination_string == '' and street_address_string == "" and city_string == "" 
         and state_string == "" and zipcode_string == "" and user_string == ""):
             date_string = 'where date = %s'
-            args_lst.append(date)
+            args_lst.append(dct['date'])
         else:
             date_string = ' and date = %s'
-            args_lst.append(date)
+            args_lst.append(dct['menu-user'])
 
-    if time == "":
+    if dct['time'] == "":
         time_string = ""
     else:
         if (destination_string == '' and street_address_string == "" and city_string == "" 
         and state_string == "" and zipcode_string == "" and user_string == "" and date_string == ""):
             time_string = 'where time = %s'
-            args_lst.append(time)
+            args_lst.append(dct['time'])
         else:
             time_string = ' and time = %s'
-            args_lst.append(time)
-    if seats == '':
+            args_lst.append(dct['time'])
+    if dct['seats'] == '':
         seats_string = ''
     else:
         if (destination_string == '' and street_address_string == "" and city_string == "" 
         and state_string == "" and zipcode_string == "" and user_string == ''
          and date_string == '' and time_string == ''):
             seats_string = 'where seats = %s'
-            args_lst.append(seats)
+            args_lst.append(dct['seats'])
         else:
             seats_string = ' and seats = %s'
-            args_lst.append(seats)
+            args_lst.append(dct['seats'])
     
-    if cost == '':
+    if dct['cost'] == '':
         cost_string = ''
     else:
         if (destination_string == '' and street_address_string == "" and city_string== "" 
         and state_string == "" and zipcode_string == "" and user_string == '' and 
         date_string == "" and time_string == '' and seats_string == ''):
             cost_string = 'where cost = %s'
-            args_lst.append(cost)
+            args_lst.append(dct['cost'])
         else:
             cost_string = ' and cost = %s'
-            args_lst.append(cost)
+            args_lst.append(dct['cost'])
     if (destination_string == '' and street_address_string == "" and city_string== "" 
     and state_string == "" and zipcode_string == "" and user_string == '' 
     and date_string == "" and time_string == '' and seats_string == '' and cost_string == ''):
