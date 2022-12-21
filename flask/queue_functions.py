@@ -164,14 +164,14 @@ def get_result_posts(conn, dct, current_date):
 def get_post_comments(conn, pid):
     """ returns a dictionary of all the comments for a given post """
     curs = dbi.dict_cursor(conn)
-    curs.execute('select * from Comment where pid = %s;', [pid])
+    curs.execute('select cid, username, pid, content, time from Comment where pid = %s;', [pid])
     return curs.fetchall()
 
 
 def userExists (conn, username):
     """ returns a boolean to see whether the user exists in the User table """
     curs = dbi.dict_cursor(conn)
-    curs.execute('select * from User where username = %s;', [username])
+    curs.execute('select username, name, phone_number, major, hometown from User where username = %s;', [username])
     return (curs.fetchone() != None)
 
 
@@ -180,7 +180,7 @@ def getProfilePic(conn, username):
     a given username """
     curs = dbi.dict_cursor(conn)
     curs.execute(
-        '''select * from Picfile where username = %s''',
+        '''select username, filename from Picfile where username = %s''',
         [username])
     return curs.fetchone()
 
@@ -189,6 +189,15 @@ def get_post_info(conn, post_id):
     a given post """
     curs = dbi.dict_cursor(conn)
     curs.execute(
-        '''select * from Post where pid = %s''',
+        '''select pid, username, type, destination, street_address, city, state, 
+        zipcode, date, time, title, seats, special_request, display_now, cost 
+        from Post where pid = %s''',
         [post_id])
     return curs.fetchone()
+
+def get_posts_by_username(conn, username):
+    """ gets info about all posts for posts
+    by a certain user"""
+    curs = dbi.dict_cursor(conn)
+    curs.execute('''select * from Post where username = %s;''', [username])
+    return curs.fetchall()
