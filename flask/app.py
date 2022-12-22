@@ -46,8 +46,6 @@ app.config['CAS_AFTER_LOGOUT'] = 'after_logout'
 
 
 
-
-
 app.config['UPLOADS'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
 
@@ -102,12 +100,10 @@ def my_posts():
         posts = qf.get_posts_by_username(conn, username)
         users = qf.get_all_users(conn)
         states = qf.get_all_states(conn)
+        user = qf.get_profile_info(conn, username)
         if request.method == 'GET':
-            return render_template('myposts.html',page_title='My Posts', posts = posts, 
+            return render_template('myposts.html',page_title='My Posts', posts = posts, user = user,
             users=users, states=states, username=username, is_logged_in=is_logged_in)
-            #need to pass in is_logged_in for CAS (even though we know it's true)
-        
-        #post route handles case where user clicks delete on one of their posts 
         else:
             pid = request.form['pid']
             cf.deactivatePost(conn, pid)
@@ -149,26 +145,42 @@ def update_user():
         if request.method == 'GET':
             #blank complete profile form 
             this_profile = qf.get_profile_info(conn, their_username)
+            current_pn=this_profile['phone_number']
+            current_cy=this_profile['class_year']
+            current_mj=this_profile['major']
+            current_ht=this_profile['hometown']
             current_pic = qf.getProfilePic(conn, their_username)
-            return render_template("updateProfile.html", page_title='Update Profile', username = their_username, pic=current_pic, profile=this_profile)
+            return render_template("updateProfile.html", page_title='Update Profile', pic=current_pic, 
+            username = their_username, current_pn=current_pn, current_cy=current_cy, 
+            current_mj=current_mj, current_ht=current_ht)
         else: 
-            #figure out which variables were filled out, if the value was deleted, the value to change to will be None 
+            #pre form info: 
+            this_profile = qf.get_profile_info(conn, their_username)
+            current_pn=this_profile['phone_number']
+            current_cy=this_profile['class_year']
+            current_mj=this_profile['major']
+            current_ht=this_profile['hometown']
+            current_pic = qf.getProfilePic(conn, their_username)
+            #make variables from form data
+            #figure out which variables were filled out
+
+            #add something to check in file upload is empty
             phone_number = request.form['phone_number']
             pn_empty = (phone_number == "")
             if pn_empty:
-                phone_number = None
+                phone_number = current_pn
             class_year = request.form['class_year']
             cy_empty = (class_year == "")
             if cy_empty:
-                class_year = None
+                class_year = current_cy
             major = request.form['major']
             mj_empty = (major == "")
             if mj_empty: 
-                major = None
+                major = current_mj
             hometown = request.form['hometown']
             ht_empty = (hometown == "")
             if ht_empty: 
-                hometown = None
+                hometown = current_ht
             cf.updateUser(conn, username=their_username, phone_number=phone_number, 
             class_year=class_year, major=major, hometown=hometown)
             file = request.files['pic']
@@ -186,102 +198,99 @@ def update_post(pid):
     if 'CAS_USERNAME' not in session:
         return redirect(url_for('applogin'))
     else:
-        conn = dbi.connect()
         their_username = session['CAS_USERNAME']
-        this_post = qf.get_post_with_pid(conn, pid)
-        post_username = this_post['username']
-        if their_username != post_username:
-            return redirect( url_for('showmy') )
-        else:
-
-            if request.method == 'GET':
-                #blank complete profile form  
-                current_type=this_post['type']
-                current_dest=this_post['destination']
-                current_stadd=this_post['street_address']
-                current_city=this_post['city']
-                current_state=this_post['state']
-                current_zip=this_post['zipcode']
-                current_date=this_post['date']
-                current_time=this_post['time']
-                current_title=this_post['title']
-                current_seats=this_post['seats']
-                current_request=this_post['special_request']
-                current_cost=this_post['cost']
-                return render_template("updatePost.html", page_title='Update Post', current_type=current_type, 
-                current_dest = current_dest, current_stadd=current_stadd, current_city=current_city, 
-                current_state=current_state, current_zip=current_zip, current_date=current_date, current_time=current_time,
-                current_title = current_title, current_seats=current_seats, current_request=current_request, 
+        conn = dbi.connect()
+        if request.method == 'GET':
+            #blank complete profile form 
+            this_post = qf.get_post_with_pid(conn, pid)
+            current_type=this_post['type']
+            current_dest=this_post['destination']
+            current_stadd=this_post['street_address']
+            current_city=this_post['city']
+            current_state=this_post['state']
+            current_zip=this_post['zipcode']
+            current_date=this_post['date']
+            current_time=this_post['time']
+            current_title=this_post['title']
+            current_seats=this_post['seats']
+            current_request=this_post['special_request']
+            current_cost=this_post['cost']
+            return render_template("updatePost.html", page_title='Update Post', current_type=current_type, 
+            current_dest = current_dest, current_stadd=current_stadd, current_city=current_city, 
+            current_state=current_state, current_zip=current_zip, current_date=current_date, current_time=current_time,
+            current_title = current_title, current_seats=current_seats, current_request=current_request, 
             current_cost = current_cost,pid = pid)
-            else: 
-                #pre form info: 
-                this_post = qf.get_post_with_pid(conn, pid)
-                post_id = this_post['pid']
-                current_type=this_post['type']
-                current_dest=this_post['destination']
-                current_stadd=this_post['street_address']
-                current_city=this_post['city']
-                current_state=this_post['state']
-                current_zip=this_post['zipcode']
-                current_date=this_post['date']
-                current_time=this_post['time']
-                current_title=this_post['title']
-                current_seats=this_post['seats']
-                current_request=this_post['special_request']
-                current_cost=this_post['cost']
+        else: 
+            #pre form info: 
+            this_post = qf.get_post_with_pid(conn, pid)
+            post_id = this_post['pid']
+            current_type=this_post['type']
+            current_dest=this_post['destination']
+            current_stadd=this_post['street_address']
+            current_city=this_post['city']
+            current_state=this_post['state']
+            current_zip=this_post['zipcode']
+            current_date=this_post['date']
+            current_time=this_post['time']
+            current_title=this_post['title']
+            current_seats=this_post['seats']
+            current_request=this_post['special_request']
+            current_cost=this_post['cost']
+    
+
+            #add something to check in file upload is empty
+            dest = request.form['destination']
+            dest_empty = (dest == "")
+            if dest_empty:
+                dest = current_dest
+            ride_type = request.form['ride_type']
+            if (ride_type == ""):
+                ride_type = current_type
+            stadd = request.form['stadd']
+            if (stadd == ""):
+                stadd = current_stadd
+
+            city = request.form['city']
+            if (city == ""):
+                city = current_city   
+
+            state = request.form['state']
+            if (state == ""):
+                state = current_state
+
+            zipcode = request.form['zip']
+            if (zipcode == ""):
+                zipcode = current_zip
+
+            date = request.form['post-date']
+            if (date == ""):
+                date = current_date
+
+            time = request.form['post-time']
+            if (time == ""):
+                time = current_time
+
+            seats = request.form['post-seats']
+            if (seats == ""):
+                seats = current_seats
+
+            title = request.form['title']
+            if (title == ""):
+                title = current_title 
+
+            special_request = request.form['post-request']
+            if (special_request == ""):
+                special_request = current_request
+
+            cost = request.form['post-cost']
+            if (cost == ""):
+                cost = current_cost
         
-                dest = request.form['destination']
-                dest_empty = (dest == "")
-                if dest_empty:
-                    dest = current_dest
-                ride_type = request.form['ride_type']
-                if (ride_type == ""):
-                    ride_type = current_type
-                stadd = request.form['stadd']
-                if (stadd == ""):
-                    stadd = current_stadd
+            cf.updatePost(conn, username=their_username, destination=dest, street_address = stadd, 
+            city = city, state = state, zipcode = zipcode, cost = cost, time = time, title = title, 
+            seats = seats, special_request = special_request, type = ride_type, date = date, display_now = True)
 
-                city = request.form['city']
-                if (city == ""):
-                    city = current_city   
-
-                state = request.form['state']
-                if (state == ""):
-                    state = current_state
-
-                zipcode = request.form['zip']
-                if (zipcode == ""):
-                    zipcode = current_zip
-
-                date = request.form['post-date']
-                if (date == ""):
-                    date = current_date
-
-                time = request.form['post-time']
-                if (time == ""):
-                    time = current_time
-
-                seats = request.form['post-seats']
-                if (seats == ""):
-                    seats = current_seats
-
-                title = request.form['title']
-                if (title == ""):
-                    title = current_title 
-
-                special_request = request.form['post-request']
-                if (special_request == ""):
-                    special_request = current_request
-
-                cost = request.form['post-cost']
-                if (cost == ""):
-                    cost = current_cost
-            
-                cf.updatePost(conn, destination=dest, street_address = stadd, 
-                city = city, state = state, zipcode = zipcode, cost = cost, time = time, title = title, 
-                seats = seats, special_request = special_request, type = ride_type, date = date, display_now = True, pid= post_id)
-
-                return redirect( url_for('showmy') )
+            return redirect( url_for('showmy') )
 
 @app.route('/after_logout/')
 def after_logout():
@@ -328,7 +337,6 @@ def myprofile():
         username = session['CAS_USERNAME']
         return redirect( url_for('profile', username = username)) 
 
-
 @app.route('/post/<post_id>', methods =['GET', 'POST'])
 def post(post_id):
     ''' displays the information of the singular post 
@@ -340,8 +348,8 @@ def post(post_id):
         their_username=session['CAS_USERNAME']
         if request.method == 'GET':
             post=qf.get_post_info(conn, post_id)
-            #this if statement protects against a user manually going to a post page by typing in the url if the post is set to not display now
             if post['display_now'] == False: 
+                #flash something
                 return redirect( url_for('index') )
             poster = qf.get_profile_info(conn, post['username'])
             comments = qf.get_post_comments(conn, post['pid'])
