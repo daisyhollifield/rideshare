@@ -53,7 +53,7 @@ app.config['MAX_CONTENT_LENGTH'] = 1*1024*1024 # 1 MB
 def index():
     '''Home page has a nav bar and shows all posts in the database whose date
     is equal to or after the current date. Redirects to applogin page if the user is not 
-    logged in.'''
+    logged in. There is also a filter that filters post based on user input'''
     if request.method == 'GET':
         if 'CAS_USERNAME' not in session:
             return redirect(url_for('applogin'))
