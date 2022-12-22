@@ -77,26 +77,26 @@
     <p>Your time of ride: {{current_time}}</p>
     <p><label>Update your time here:
         <input 
-                type="time" name="post-time" >
+                type="time" name="post-time" value = "{{current_time}}">
         </label> 
     
     <p>Your special requests: {{current_request}}</p>
     <p><label>Update your requests here:
         <input 
-                type="text" name="post-request" >
+                type="text" name="post-request" value = "{{current_request}}" >
         </label> 
 
     <p>Number of seats requested : {{current_seats}}</p>
     <p><label>Update your seats here:
         <input 
-                type="number" name="post-seats" >
+                type="number" name="post-seats" value = {{current_seats}}>
         </label> 
     
 
     <p>Your cost of ride: ${{current_cost}}</p>
     <p><label>Update your cost here:
         <input 
-                type="text" name="post-cost">
+                type="text" name="post-cost" value = {{current_cost}}>
         </label> 
 
     <p><input type="submit" value="Update Post!">

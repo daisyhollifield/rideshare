@@ -203,23 +203,12 @@ def update_post(pid):
         if request.method == 'GET':
             #blank complete profile form 
             this_post = qf.get_post_with_pid(conn, pid)
-            current_type=this_post['type']
-            current_dest=this_post['destination']
-            current_stadd=this_post['street_address']
-            current_city=this_post['city']
-            current_state=this_post['state']
-            current_zip=this_post['zipcode']
-            current_date=this_post['date']
-            current_time=this_post['time']
-            current_title=this_post['title']
-            current_seats=this_post['seats']
-            current_request=this_post['special_request']
-            current_cost=this_post['cost']
-            return render_template("updatePost.html", page_title='Update Post', current_type=current_type, 
-            current_dest = current_dest, current_stadd=current_stadd, current_city=current_city, 
-            current_state=current_state, current_zip=current_zip, current_date=current_date, current_time=current_time,
-            current_title = current_title, current_seats=current_seats, current_request=current_request, 
-            current_cost = current_cost,pid = pid)
+
+            return render_template("updatePost.html", page_title='Update Post', current_type=this_post['type'], 
+            current_dest = this_post['destination'], current_stadd=this_post['street_address'], current_city=this_post['city'], 
+            current_state=this_post['state'], current_zip=this_post['zipcode'], current_date=this_post['date'], current_time=this_post['time'],
+            current_title = this_post['title'], current_seats=this_post['seats'], current_request=this_post['special_request'], 
+            current_cost = this_post['cost'],pid = pid)
         else: 
             #pre form info: 
             this_post = qf.get_post_with_pid(conn, pid)
@@ -237,17 +226,17 @@ def update_post(pid):
             current_request=this_post['special_request']
             current_cost=this_post['cost']
     
-
             #add something to check in file upload is empty
             dest = request.form['destination']
             dest_empty = (dest == "")
             if dest_empty:
                 dest = current_dest
+
             ride_type = request.form['ride_type']
             if (ride_type == ""):
                 ride_type = current_type
             stadd = request.form['stadd']
-            if (stadd == ""):
+            if (stadd== ""):
                 stadd = current_stadd
 
             city = request.form['city']
@@ -286,9 +275,9 @@ def update_post(pid):
             if (cost == ""):
                 cost = current_cost
         
-            cf.updatePost(conn, username=their_username, destination=dest, street_address = stadd, 
+            cf.updatePost(conn, destination=dest, street_address = stadd, 
             city = city, state = state, zipcode = zipcode, cost = cost, time = time, title = title, 
-            seats = seats, special_request = special_request, type = ride_type, date = date, display_now = True)
+            seats = seats, special_request = special_request, type = ride_type, date = date, display_now = True, pid = pid)
 
             return redirect( url_for('showmy') )
 
