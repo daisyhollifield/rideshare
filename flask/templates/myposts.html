@@ -23,7 +23,7 @@
         <div class = "seeking-info">
         {% endif %}
             <p>User: {{post.name}} (<a href = "{{ url_for( 'profile', username = post.username ) }}">{{post.username}}</a>)</p>
-            <p>Phone Number: {{post.phone_number}}</p>
+            <p>Phone Number: {{user.phone_number}}</p>
         </div>
         {% if post.type == "offering" %}
         <div class = "offering-info">

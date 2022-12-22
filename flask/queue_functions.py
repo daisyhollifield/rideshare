@@ -7,7 +7,9 @@ def get_posts_with_usernames(conn, current_date):
     """ gets info about all posts and corresponding usernames for posts
     whose date is equal to or later than the current date"""
     curs = dbi.dict_cursor(conn)
-    curs.execute('''select * from Post inner join User using (username)
+    curs.execute('''select `type`, title, pid, Post.username, name, phone_number, 
+    destination, street_address, city, state, zipcode, date, time, 
+    seats, cost, special_request from Post inner join User using (username)
      where display_now = True and date >= %s order by date, time;''', [current_date])
     return curs.fetchall()
 
@@ -15,20 +17,23 @@ def get_posts_with_usernames(conn, current_date):
 
 def get_post_with_pid(conn, pid):
     curs = dbi.dict_cursor(conn)
-    curs.execute('select * from Post where pid = %s', [pid])
+    curs.execute('''select `type`, title, pid, 
+    destination, street_address, city, state, zipcode, date, time, 
+    seats, cost, special_request from Post where pid = %s''', [pid])
     return curs.fetchone()
 
 def get_profile_info(conn, username):
     """ gets profile info about a given username"""
     curs = dbi.dict_cursor(conn)
-    curs.execute('select * from User where username = %s;', [username])
+    curs.execute('''select username, name, phone_number, class_year, major, 
+    hometown from User where username = %s;''', [username])
     return curs.fetchone()
     
 def get_all_users(conn):
     """ returns a dictionary containing all of the users and their info 
     in the User table  """
     curs = dbi.dict_cursor(conn)
-    curs.execute('select * from User order by username')
+    curs.execute('select username, name, phone_number, class_year, major, hometown from User order by username')
     return curs.fetchall()
 
 def get_all_states(conn):
@@ -156,7 +161,8 @@ def get_result_posts(conn, dct, current_date):
         display_now_string = 'where display_now = True'
     else:
         display_now_string = ' and display_now = True'
-    curs.execute('select * from Post inner join User using (username) ' 
+    curs.execute('''select username, name, phone_number, pid, type, destination, street_address, city, state, 
+     zipcode, date, time, title, seats, special_request, display_now, cost  from Post inner join User using (username) ''' 
     + destination_string + street_address_string + city_string + state_string + 
     zipcode_string + user_string + date_string + time_string + seats_string + 
     cost_string + display_now_string + ' order by date, time;', args_lst)
@@ -201,5 +207,6 @@ def get_posts_by_username(conn, username):
     """ gets info about all posts for posts
     by a certain user"""
     curs = dbi.dict_cursor(conn)
-    curs.execute('''select * from Post where username = %s;''', [username])
+    curs.execute('''select pid, username, type, destination, street_address, city, state, 
+        zipcode, date, time, title, seats, special_request, display_now, cost from Post where username = %s;''', [username])
     return curs.fetchall()

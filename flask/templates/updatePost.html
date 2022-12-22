@@ -30,13 +30,13 @@
     <p>Your current post title: {{current_title}}</p>
     <p><label>Update your Post Title:
         <input 
-                type="text" name="title" value= "{{current_title}}"">
+                type="text" name="title" value= "{{current_title}}">
         </label></p> 
     
     <p>Your current destination: {{current_dest}}</p>
     <p><label>Update your current destination:
         <input 
-               type="text" name="destination" value= "{{current_dest}}"">
+               type="text" name="destination" value= "{{current_dest}}">
     </label></p>
 
     <br>
@@ -45,7 +45,7 @@
     <p>Your destination street address: {{current_stadd}}</p>
     <p><label>Update your Street Address:
     <input 
-           type="text" name="stadd" value="{{current_stadd}}"">
+           type="text" name="stadd" value="{{current_stadd}}">
     </label></p>
 
     <p>Your destination city: {{current_city}}</p>
@@ -57,13 +57,13 @@
     <p>Your destination state: {{current_state}}</p>
     <p><label>Update your State:
     <input 
-           type="text" name="state" value="{{current_state}}"">
+           type="text" name="state" value="{{current_state}}">
     </label></p>
     
     <p>Your destination zip code: {{current_zip}}</p>
     <p><label>Update your Zip:
     <input 
-           type="text" name="zip" value="{{current_zip}}"">
+           type="text" name="zip" value="{{current_zip}}">
     </label></p>
 
     <br>
@@ -77,26 +77,26 @@
     <p>Your time of ride: {{current_time}}</p>
     <p><label>Update your time here:
         <input 
-                type="time" name="post-time" >
+                type="time" name="post-time" value = "{{current_time}}">
         </label> 
     
     <p>Your special requests: {{current_request}}</p>
     <p><label>Update your requests here:
         <input 
-                type="text" name="post-request" >
+                type="text" name="post-request" value = "{{current_request}}" >
         </label> 
 
     <p>Number of seats requested : {{current_seats}}</p>
     <p><label>Update your seats here:
         <input 
-                type="number" name="post-seats" >
+                type="number" name="post-seats" value = {{current_seats}}>
         </label> 
     
 
     <p>Your cost of ride: ${{current_cost}}</p>
     <p><label>Update your cost here:
         <input 
-                type="text" name="post-cost">
+                type="text" name="post-cost" value = {{current_cost}}>
         </label> 
 
     <p><input type="submit" value="Update Post!">
